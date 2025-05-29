@@ -6,8 +6,7 @@ import Button from "../../components/Button/Button.tsx"
 import Footer from "../../components/footer/Footer.tsx";
 import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-// @ts-ignore
-import Logo from "../../assets/Logo.png";
+const Logo = "/Logo.png";
 
 
 const Home: React.FC = () => {

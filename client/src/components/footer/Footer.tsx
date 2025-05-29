@@ -1,13 +1,13 @@
-// @ts-ignore
-import Da from "../../assets/flags/den_flag.png";
-// @ts-ignore
-import Nl from "../../assets/flags/nl_flag.png";
-// @ts-ignore
-import Uk from "../../assets/flags/uk_flag.png";
 import "./footerSylee.scss"
 import * as React from "react";
 import {useTranslation} from "react-i18next";
 import {socket} from "../../socket/client.ts";
+
+const Da = "/flags/den_flag.png";
+
+const Nl = "/flags/nl_flag.png";
+
+const Uk = "/flags/uk_flag.png";
 
 
 function Footer() {

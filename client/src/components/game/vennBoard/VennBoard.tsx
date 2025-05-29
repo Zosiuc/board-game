@@ -31,7 +31,6 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
     const diceRef = useRef<HTMLDivElement>(null);
     const {contextGameId} = useGameContext();
     const {teamId} = useParams();
-    //const {gameTiles,gameId} = useGameContext();
     const [onClickedTiles,setOnClickedTiles] = useState<string[]>([]);
     const [tiles , setTiles] = useState<{
         id:string,
@@ -47,8 +46,10 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
 
         const steps = Math.floor(Math.random() * 6) + 1;
         movePlayer(steps);
+
+
         // @ts-ignore
-        const rotation = faceRotations[steps];
+        let rotation  = faceRotations[steps];
         if (diceRef.current) {
             diceRef.current.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
         }
