@@ -63,6 +63,7 @@ const TeamPanel: React.FC = () => {
 
     useEffect(() => {
 
+        setRoundNumber(0)
         loadTeam().then(r => loadStrategy());
 
         socket.on("question", (myQuestion) => {

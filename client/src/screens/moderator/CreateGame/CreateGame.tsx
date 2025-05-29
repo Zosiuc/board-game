@@ -32,7 +32,6 @@ const CreateGame: React.FC = () => {
     const navigate = useNavigate();
     const { setContextGameId, setContextModeratorId} = useGameContext();
     const [gameId, setGameId] = useState<string|null>(null);
-    const [moderatorId,setModeratorId] = useState<string|null>(null);
     const [moderatorName, setModeratorName] = useState<string>("");
     const [rounds, setRounds] = useState<number>(2);
     const [totalTeams, setTotalTeams] = useState<number>(2);
@@ -78,7 +77,6 @@ const CreateGame: React.FC = () => {
             }
             console.log(`Moderator ${moderatorIdR} is toegevoegd`);
             sessionStorage.setItem("moderator_id", String(moderatorIdR));
-            setModeratorId(moderatorIdR);
             setContextModeratorId(moderatorIdR);
 
 

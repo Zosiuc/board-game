@@ -105,7 +105,7 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
             socket.off("gameTiles");
         }
 
-    }, []);
+    }, [contextGameId]);
 
     return (
         <div className="venn-wrapper">

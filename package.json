@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
-    "setup": "node ./server/application/use-cases/Setup/setupDatabase.js",
-    "importdata": "node ./server/application/use-cases/Setup/importData.js",
     "start": "node ./server/app.js",
     "test": "jest",
     "server": "nodemon ./server/app.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "npm run build --prefix client"
   },
   "dependencies": {
     "@jest/globals": "^29.7.0",
