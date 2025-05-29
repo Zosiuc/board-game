@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Category {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  Game     Game[]
+  Question Question[]
+  Strategy Strategy[]
+}
+
+model Game {
+  id            String       @id @default(uuid())
+  Category      Category?    @relation(fields: [category_id], references: [id])
+  category_id   Int?
+  master_socket String
+  rounds        Int
+  teams_count   Int
+  lang          String
+  status        String?      @default("pending")
+  created_at    DateTime     @default(now())
+  Moderator     Moderator[]
+  Team          Team[]
+  TeamQueAns    TeamQueAns[]
+  Tile          Tile[]
+}
+
+model Moderator {
+  id         String       @id @default(cuid())
+  name       String
+  game_id    String
+  Game       Game         @relation(fields: [game_id], references: [id])
+  TeamQueAns TeamQueAns[]
+}
+
+model Question {
+  id          Int          @id @default(autoincrement())
+  Category    Category?    @relation(fields: [category_id], references: [id])
+  category_id Int
+  Strategy    Strategy?    @relation(fields: [strategy_id], references: [id])
+  strategy_id Int
+  lang        String
+  content     String
+  TeamQueAns  TeamQueAns[]
+}
+
+model Strategy {
+  id          Int        @id @default(autoincrement())
+  Category    Category?  @relation(fields: [category_id], references: [id])
+  category_id Int?
+  name        String     @unique
+  icon        String?
+  color       String?
+  isChosen    Boolean    @default(false)
+  Question    Question[]
+  Team        Team[]
+}
+
+model TeamQueAns {
+  id           String     @id @default(cuid())
+  Game         Game?      @relation(fields: [game_id], references: [id])
+  game_id      String
+  Team         Team?      @relation(fields: [team_id], references: [id])
+  team_id      String
+  Question     Question?  @relation(fields: [question_id], references: [id])
+  question_id  Int
+  Moderator    Moderator? @relation(fields: [moderator_id], references: [id])
+  moderator_id String?
+  answer       String?
+  score        Int?
+  feedback     String?
+  round_number Int?
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @default(now())
+}
+
+model Team {
+  id             String       @id @default(uuid())
+  name           String
+  Strategy       Strategy?    @relation(fields: [strategy_id], references: [id])
+  strategy_id    Int
+  Game           Game?        @relation(fields: [game_id], references: [id])
+  game_id        String
+  socket_id      String
+  points         Int?         @default(0)
+  color          String
+  current_tileId String       @default("T0")
+  created_at     DateTime     @default(now())
+  TeamQueAns     TeamQueAns[]
+}
+
+model Tile {
+  id      String   @id
+  Game    Game     @relation(fields: [game_id], references: [id])
+  game_id String
+  x       Int
+  y       Int
+  color   String
+  clicked Boolean? @default(false)
+}
