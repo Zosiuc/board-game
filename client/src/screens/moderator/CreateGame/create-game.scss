@@ -1,0 +1,114 @@
+.creatGame-page {
+  font-family: Afacad;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  min-height: 100%;
+  text-align: center;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 30px;
+
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 80%;
+    max-width: 800px;
+    height: 600px;
+    background-color: var(--container);
+    border-radius: 7px;
+    text-align: center;
+    justify-items: center;
+
+    .room-code {
+      display: flex;
+      grid-column: span 2;
+      justify-content: space-evenly;
+      align-items: center;
+      background-color: var(--container);
+      width: 100%;
+      height: 50px;
+      border-radius: 7px 7px 0 0;
+    }
+
+    .create-game-form {
+      display: grid;
+      grid-column: span 2;
+      grid-row: 3;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows: repeat(6, 1fr);
+      width: 100%;
+      max-width: 800px;
+      height: 600px;
+      border-radius: 7px;
+      text-align: center;
+      justify-items: center;
+      align-items: center;
+
+      .moderator-name, .player-number, .game-rounds, .game-category {
+        display: grid;
+        grid-column: span 2;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        margin-left: 50px;
+        width: 100%;
+        height: 30px;
+
+        h5 {
+          display: block;
+          grid-column: 1;
+          align-self: center;
+          justify-self: center;
+        }
+
+      }
+
+      .moderator-name textarea, .player-number select, .game-rounds select, .game-category select {
+        display: block;
+        grid-column: 2;
+        background-color: var(--veld);
+        border: 1px solid var(--border-veld);
+        width: 122px;
+        height: 40px;
+        border-radius: 9px;
+        text-align: center;
+        font-size: 20px;
+        font-family: inherit;
+        color: inherit;
+        align-content: center;
+        justify-self: center;
+      }
+      .moderator-name textarea{
+        font-size: 15px;
+      }
+
+      select {
+        display: flex;
+        background-color: var(--veld);
+        font-size: 20px;
+        font-family: inherit;
+        color: inherit;
+        padding: 7px;
+        width: fit-content;
+        height: 40px;
+        border: 1px solid var(--border-veld);
+        border-radius: 9px;
+
+      }
+
+      Button {
+        display: block;
+        grid-column: span 2;
+        grid-row: 5;
+        width: 50%;
+        height: 40px;
+        align-self: end;
+
+      }
+    }
+  }
+
+
+}

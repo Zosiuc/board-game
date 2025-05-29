@@ -1,0 +1,248 @@
+
+.moderator-game {
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  min-width: 850px;
+
+  header {
+    display: flex;
+    flex-direction: row;
+    background-color: var(--container);
+    grid-gap: 2rem;
+    border: 2px solid transparent;
+    border-radius: 7px;
+    justify-content: center;
+    align-items: center;
+    width: 98%;
+    height: 30px;
+
+    p {
+      display: flex;
+      align-items: center;
+      width: fit-content;
+      height: 40px;
+      font-size: 16px;
+      margin: 7px;
+
+    }
+  }
+
+  .info-section {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: start;
+    width: 90%;
+    overflow: scroll;
+    height: 150px;
+    border: 2px solid transparent;
+    border-radius:7px;
+
+
+    .title {
+      display: flex;
+      margin: 10px;
+      justify-content: center;
+      align-items: center;
+
+    }
+
+    .teams-result {
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: center;
+      gap: 7px;
+
+
+
+      .team-column {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-items: center;
+        padding: 20px;
+        height: 85%;
+        border-radius: 8px;
+        background: var(--team-kaart);
+
+        .team-title-container{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          justify-content: center;
+          img{
+            display: flex;
+            align-content: center;
+            justify-content: center;
+            height: 60px;
+            border: var(--border-veld);
+            border-radius: 50%;
+
+          }
+          h3, h5{
+            height: 1px;
+          }
+
+        }
+        .cell-container {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          height: 100%;
+          padding: 7px;
+          overflow: scroll;
+          .board-cell {
+            display: flex;
+            flex-direction: column;
+            padding: 7px;
+            border: 1px solid var(--border-veld);
+            align-content: center;
+            justify-content: center;
+            width: 100px;
+            background-color: var(--veld);
+            border-radius: 5px;
+            margin: 3px;
+            font-weight: bold;
+            text-align: center;
+          }
+        }
+
+
+      }
+    }
+  }
+  .game-board {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--container);
+    border-radius: 7px;
+    width: 98%;
+    padding: 2px;
+    .waiting-text{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .answers-section{
+      display: flex;
+      padding: 20px;
+      flex-direction: column;
+      gap:20px;
+      background-color: rgba(9, 138, 129, 0.87);
+      z-index: 2;
+      position: absolute;
+      max-width: 90%;
+
+      h3 {
+        display: flex;
+        justify-content: center;
+        background-color: #d1e2e6;
+        padding: 7px;
+        border-radius: 20px;
+
+      }
+      .answers{
+        display: flex;
+        flex-direction: row;
+
+        .answer-container{
+          display: flex;
+          flex-direction: column;
+          justify-content: start;
+          align-items: center;
+          height:600px;
+          width: 600px;
+
+          .question-block, .answer-block{
+            display: flex;
+            word-break: break-all;
+            text-wrap: wrap;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 90%;
+            max-height: 400px;
+
+          }
+          .question-block{
+            background-color: #d0e8e6;
+          }
+          .answer-block{
+            background-color: #a8eae6;
+
+          }
+        }
+        .judge-form{
+          display: flex;
+          flex-direction: column;
+          justify-content: start;
+          align-items: center;
+          height: 600px;
+          width: 50%;
+          gap: 20px;
+          .feedback-text{
+            text-align: center;
+            border-radius: 7px;
+            width: 100%;
+            height: 100%;
+          }
+          .points-container {
+            display: flex;
+            flex-direction: row;
+            gap: 35px;
+            .points {
+              display: flex;
+              width: 30px;
+              height: 30px;
+              text-align: center;
+              align-items: center;
+              justify-content: center;
+              background-color: rgba(218, 230, 229, 0.62);
+              border-radius: 100%;
+              transition: 0.4s ease-in;
+            }
+            input[type="radio"][name="points"] {
+              display: none;
+
+
+            }
+            input[type="radio"][name="points"]:hover + label{
+
+              transform: translate(-4px, -3px) scale3d(1.2, 1.2, 1);
+            }
+
+            input[type="radio"][name="points"]:checked + label {
+              background-color: #c9dfc9;
+              color: rgba(2, 35, 23, 0.73);
+              font-weight: bolder;
+              border: 3px solid darkgreen;
+            }
+          }
+          .sub-button{
+            background-color: #d1e2e6;
+            width: 75%;
+            height: 40px;
+            border: none;
+            border-radius: 20px;
+            transition: 0.4s ease-in;
+          }
+          .sub-button:hover{
+            transform:  scale3d(1.1, 1.2, 1);
+            background-color: #283a39;
+            color: white;
+          }
+        }
+
+
+      }
+
+    }
+  }
+
+
+}

@@ -1,0 +1,107 @@
+.join-game {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  text-align: center;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+
+  .join-game-form label, h4 {
+    font-family:Afacad;
+    font-size: 22px;
+  }
+
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 400px;
+  }
+
+  .join-game-form {
+    display: flex;
+    flex-direction: column;
+    background-color: #f4f4f4;
+    height: 545px;
+    width: 400px;
+    padding: 10px;
+    margin: 80px;
+    justify-self: center;
+    align-items: center;
+    align-content: center;
+    justify-content: space-evenly;
+    border-radius: 7px;
+
+
+    input {
+        padding: 0 15px;
+        height: 62px;
+        line-height: 62px;
+        font-size: 24px;
+        width: 80%;
+        border-radius: 15px;
+        border: 1px solid var(--border-veld);
+        font-weight: bold;
+        color: var(--text);
+        text-align: left;
+        box-sizing: border-box;
+        font-family: Afacad, serif;
+
+    }
+
+    select {
+      padding: 0 15px;
+      height: 62px;
+      line-height: 62px;
+      font-size: 24px;
+      width: 80%;
+      border-radius: 15px;
+      border: 1px solid var(--border-veld);
+      font-weight: bold;
+      color: var(--text);
+      text-align: left;
+      box-sizing: border-box;
+      font-family: Afacad, serif;
+    }
+  }
+
+
+
+}
+@media screen and (max-width: 830px) {
+  .join-game{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    align-items: center;
+    justify-items: center;
+
+    .logo{
+      display: flex;
+      justify-content: center;
+      align-content: center;
+      height: 400px;
+      margin-top: 30%;
+
+
+    }
+    .join-game-form{
+      display: flex;
+      gap:16px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top:0;
+      
+
+      input, select{
+        text-align: center;
+      }
+      button{
+        margin-top: 40px;
+      }
+    }
+  }
+}

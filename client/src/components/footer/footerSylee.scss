@@ -1,0 +1,45 @@
+.Footer-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  background-color: var(--container);
+  width: 100%;
+  height: 22px;
+  padding: 5px;
+
+
+  div {
+    display: flex;
+    flex-direction: row;
+
+    button {
+      display: flex;
+      background-color: transparent;
+      margin-left: 15px;
+      align-items: center;
+      justify-content: center;
+      align-content: center;
+      border: none;
+      border-radius: 50px;
+      transition: transform 1.5s;
+      overflow: hidden;
+      width: 40px;
+      height: 25px;
+
+      img {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 110%;
+
+
+      }
+
+    }
+    :hover {
+      transform: scale(1.3);
+    }
+  }
+
+
+}

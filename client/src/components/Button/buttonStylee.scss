@@ -1,0 +1,29 @@
+
+
+.general{
+  display: flex;
+  background-color: var(--button);
+  align-items: center;
+  justify-content: center;
+  width: 250px;
+  height: 3rem;
+  margin: 2px;
+  padding: 5px;
+  border: var(--border-veld);
+  border-radius: 15px;
+
+  transition: transform 1.5s;
+  cursor: pointer;
+  color: var(--text);
+  font-family: "Afacad", serif;
+  font-size: 24px;
+  font-weight: bold;
+
+}
+.general:hover{
+
+  transform: scale(1.04);
+  border: 8px;
+  background-color: var(--button-selected);
+  border-color: var(--border-veld);
+}
