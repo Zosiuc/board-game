@@ -6,7 +6,7 @@
     "start": "node ./server/app.js",
     "test": "jest",
     "server": "nodemon ./server/app.js",
-    "client": "npm start --prefix client",
+    "client": "npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "postinstall": "npm install --prefix client --legacy-peer-deps ",
     "build": "npm run build --prefix client"
@@ -15,7 +15,6 @@
     "@jest/globals": "^29.7.0",
     "@prisma/client": "5.13.0",
     "@socket.io/admin-ui": "^0.5.1",
-    "ajv": "6.12.6",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
