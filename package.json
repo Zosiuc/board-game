@@ -10,8 +10,8 @@
     "server": "nodemon ./server/app.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "npm run build --prefix client",
-    "postinstall": "npm install  --prefix client --legacy-peer-deps"
+    "postinstall": "npm install --prefix client --legacy-peer-deps",
+    "build": "npm run build --prefix client"
   },
   "dependencies": {
     "@jest/globals": "^29.7.0",
