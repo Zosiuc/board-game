@@ -13,6 +13,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
+    "ajv": "6.12.6",
     "i18next": "23.16.8",
     "i18next-browser-languagedetector": "8.0.4",
     "react": "^19.0.0",
@@ -25,7 +26,6 @@
     "socket.io-client": "^4.8.1",
     "web-vitals": "^2.1.4"
   },
-
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -49,5 +49,8 @@
     "@types/react-dom": "^19.0.4",
     "nodemon": "^3.1.9",
     "typescript": "^5.1.0"
+  },
+  "overrides": {
+    "ajv": "6.12.6"
   }
 }
