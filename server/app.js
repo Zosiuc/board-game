@@ -1,6 +1,5 @@
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
 const { initializeSocket } = require('./infra/socket');
 const {join} = require("node:path");
 
@@ -14,7 +13,7 @@ app.use(express.static(join(__dirname, '../client/build')));
 
 // Fallback naar index.html voor React Router
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    res.sendFile(join(__dirname, '../client/build/index.html'));
 });
 
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

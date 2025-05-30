@@ -5,7 +5,7 @@ const {
     handleGetMyQuestions,
     handleGetStrategyQuestions,
     handleGetQuestion
-} = require("../../web/controllers/questionController");
+} = require("../../../controllers/questionController");
 
 module.exports = function registerQuestionEvents(io, socket) {
 

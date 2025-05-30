@@ -1,5 +1,5 @@
 
-const {handleCreateTiles, handleTileClick} = require("../../web/controllers/tilesController");
+const {handleCreateTiles, handleTileClick} = require("../../../controllers/tilesController");
 
 
 module.exports = function registerTilesEvents(io, socket) {

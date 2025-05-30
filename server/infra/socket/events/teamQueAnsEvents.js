@@ -1,4 +1,4 @@
-const {handleSaveTeamQueAns, handleLoadTeamQueAns} = require("../../web/controllers/teamQueAnsController");
+const {handleSaveTeamQueAns, handleLoadTeamQueAns} = require("../../../controllers/teamQueAnsController");
 
 
 module.exports = function registerTeamQueAnsEvents(io, socket) {

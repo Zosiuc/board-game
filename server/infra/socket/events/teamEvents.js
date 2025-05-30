@@ -6,7 +6,7 @@ const {
     handleRollDice,
     handleSelectTile,
     handleSubmitAnswer
-} = require("../../web/controllers/teamController");
+} = require("../../../controllers/teamController");
 
 
 module.exports = function registerTeamEvents(io, socket) {

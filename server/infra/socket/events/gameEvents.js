@@ -6,7 +6,7 @@ const {
     handleEndGame,
     handleLoadGame,
     handleLoadTiles
-} = require("../../web/controllers/gameController.js");
+} = require("../../../controllers/gameController.js");
 
 
 module.exports =async function registerGameEvents (io, socket) {

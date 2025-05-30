@@ -2,7 +2,7 @@ const {
     handleNewCategory,
     handleChoseCategory,
     handleGetCategories
-} = require("../../web/controllers/categoryController");
+} = require("../../../controllers/categoryController");
 
 module.exports = function registerCategoryEvents( io, socket ) {
     socket.on("getCategories", () => handleGetCategories(socket))

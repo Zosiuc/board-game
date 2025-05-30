@@ -4,7 +4,7 @@ const {
     handleGetModeratorByGameId,
     handleStartRound,
     handleJudgeAnswer
-} = require("../../web/controllers/moderatorController");
+} = require("../../../controllers/moderatorController");
 
 
 

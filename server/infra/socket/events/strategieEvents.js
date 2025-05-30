@@ -1,7 +1,7 @@
 const {
     handleGetStrategies, handleChoiceStrategy, handleNewStrategy
 
-} = require("../../web/controllers/strategyControllers");
+} = require("../../../controllers/strategyControllers");
 
 
 module.exports = function registerStrategyEvents(io, socket) {
