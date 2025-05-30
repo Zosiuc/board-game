@@ -6,6 +6,20 @@
   justify-content: space-between;
   gap: 25px;
   min-width: 850px;
+  .message{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    min-width: 850px;
+    box-shadow: 2px 2px 60px rgba(0, 0, 0, 0.3);
+    background-color: var(--msg-bg);
+    color: var(--msg-color);
+    font-size: 32px;
+    font-weight: bolder;
+
+
+  }
   .loading {
     display: flex;
     justify-content: center;
@@ -37,6 +51,18 @@
       font-size: 16px;
       margin: 7px;
 
+    }
+    .start_game_button {
+      display: flex;
+      background-color: var(--start-game-button);
+      border: 2px solid var(--secondary-text);
+      border-radius: 7px;
+      box-shadow: 2px 2px 40px rgba(0, 0, 0, 0.3);
+      font-weight: bolder;
+      transition: 1s;
+      &:hover{
+        scale: 1.2;
+      }
     }
   }
 

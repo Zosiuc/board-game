@@ -1,11 +1,14 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {socket} from "../socket/client.ts";
+import {socket} from "../socket/client";
+
 
 interface GameContextType {
 
     contextGameId: string | null;
     contextTeamId: string | null;
     contextModeratorId: string | null;
+    gameActive:boolean;
+    msg:string
 
     contextModerator: {
         id: string,
@@ -70,6 +73,8 @@ interface GameContextType {
     setContextGameId: (contextGameId: string | null) => void;
     setContextTeamId: (contextTeamId: string | null) => void;
     setContextModeratorId: (contextModeratorId: string | null) => void;
+    setGameActive: (gameActive: boolean) => void;
+    setMsg: (msg: string) => void;
 
     setContextModerator: (
         contextModerator: {
@@ -127,6 +132,7 @@ interface GameContextType {
                                name: string,
                                icon: string,
                                color: string
+
                            }[] | null
     ) => void;
 }
@@ -137,7 +143,8 @@ export const GameProvider = ({children}: { children: ReactNode }) => {
     const [contextGameId, setContextGameId] = useState<string | null>(null);
     const [contextTeamId, setContextTeamId] = useState<string | null>(null);
     const [contextModeratorId, setContextModeratorId] = useState<string | null>(null);
-
+    const [gameActive, setGameActive] = useState<boolean>(false);
+    const [ msg, setMsg] = useState("");
     const [contextModerator, setContextModerator] = useState<{
         id: string,
         name: string,
@@ -163,7 +170,7 @@ export const GameProvider = ({children}: { children: ReactNode }) => {
         x: number,
         y: number,
         color: string,
-        clicked: boolean,
+        clicked: boolean
     }[] | null>(null);
     const [contextTeams, setContextTeams] = useState<{
         id: string,
@@ -217,20 +224,39 @@ export const GameProvider = ({children}: { children: ReactNode }) => {
             setContextTeams(teams);
         });
 
+        socket.on('gameStarted' ,(msg) => {
+
+            setGameActive(true);
+            setMsg(msg)
+        })
+
         return () => {
             socket.off("moderator");
             socket.off("game");
             socket.off("gameTiles");
             socket.off("getSameRoomTeams");
+            socket.off('gameStarted');
         }
 
     }, [])
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setMsg('');
+        }, 5000); // 500ms wachten
+
+        return () => {
+            clearTimeout(handler); // Reset timer als gebruiker weer typt
+        };
+    }, [msg]);
 
     return (
         <GameContext.Provider value={{
             contextGameId,
             contextTeamId,
             contextModeratorId,
+            gameActive,
+            msg,
             contextModerator,
             contextGame,
             contextGameTiles,
@@ -240,6 +266,8 @@ export const GameProvider = ({children}: { children: ReactNode }) => {
             setContextGameId,
             setContextTeamId,
             setContextModeratorId,
+            setGameActive,
+            setMsg,
             setContextModerator,
             setContextGame,
             setContextGameTiles,

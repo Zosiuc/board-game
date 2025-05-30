@@ -19,6 +19,7 @@ async function handleAddModerator(socket, name, game_id) {
         console.log('moderator id: ', result.id);
         const moderatorAdded = await moderatorService.getModerator(result.id);
         console.log(`moderator \"${moderatorAdded.name}\" voor \"${moderatorAdded.game_id} \" is gecreëerd`);
+        socket.join(game_id)
         socket.emit("moderatorAdded", moderatorAdded.id);
 
     } catch (err) {
@@ -50,7 +51,7 @@ async function handleGetModeratorByGameId(io, socket, game_id) {
         const moderator = await moderatorService.getModeratorByGameId(game_id);
         if (!moderator) {
             console.error("could not get moderator");
-            return socket.emit("moderatorByGameId", null);
+            return socket.emit("moderatorByGameId", "could not get moderator");
         }
         console.log(moderator)
         socket.emit("moderatorByGameId", moderator);
@@ -90,12 +91,17 @@ async function handleJudgeAnswer(socket, queAnsTeams) {
 
 }
 
+async function handleJoinGame(socket,id) {
+    socket.join(id);
+}
+
 module.exports = {
     handleAddModerator,
     handleGetModerator,
     handleGetModeratorByGameId,
     handleStartRound,
-    handleJudgeAnswer
+    handleJudgeAnswer,
+    handleJoinGame
 }
 
 

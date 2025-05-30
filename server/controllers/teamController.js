@@ -15,19 +15,14 @@ async function handleAddTeam(socket, {team_id, game_id, team_name, strategy_name
     try {
         const game = await gameService.getGameById(game_id);
         const strategy = await strategyService.getStrategyByName(strategy_name);
-        console.log("-handleAddTeam :");
-        console.log("selected strategy:\n",strategy);
         if (!game) return socket.emit("teamAdded", [] );
         const team = await teamService.addTeam(team_id, team_name, strategy.id,  game.id, socket.id, strategy.color);
-        await strategyService.updateStrategy(strategy.id, { isChosen:true })
-        console.log("new team has added:\n",team);
+        socket.to(game.id).emit("strategyReserved", strategy.name);
         socket.join(game_id);
-        console.log(`✅ Team ${team_id} heeft zich aangesloten bij game ${game_id}`);
         socket.emit("teamAdded", team);
-        console.log("_______________________________");
+
     }catch(err) {
-        console.error(`Error Adding Team: ${err.message}`);
-        socket.to(game_id).emit("teamAdded", err);
+        socket.to(game_id).emit("teamAdded", err.message);
     }
 }
 

@@ -11,6 +11,7 @@ const {
 
 module.exports = function registerTeamEvents(io, socket) {
     socket.on("joinTeam", (team_id, team_name, strategy_name, game_id) => handleAddTeam(socket,{team_id, team_name, strategy_name, game_id}));
+
     socket.on("getTeam",(teamId) => handleGetTeamById(socket,teamId));
     socket.on("getSameStrategyTeams", (game_id,strategy_name) => handleSameStrategyTeam(socket, {game_id,strategy_name}));
     socket.on("getSameRoomTeams", (game_id) => handleGetRoomTeams(socket, game_id));

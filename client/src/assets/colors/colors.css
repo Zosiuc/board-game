@@ -15,4 +15,8 @@
     --veld: rgba(244, 244, 244, 0.56);
     --border-veld: rgba(145, 21, 21, 0.86);
     --team-kaart: rgba(228, 243, 237, 0.73);
+    --onActiveBord: rgba(156, 181, 195, 0.53);
+    --start-game-button: rgba(221, 162, 162, 0.86);
+    --msg-bg: rgba(237, 197, 197, 0.67);
+    --msg--color: #f4f4f4;
 }

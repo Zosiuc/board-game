@@ -26,7 +26,7 @@ async function handleChoiceStrategy(socket, {game_id,strategy_id}) {
     try {
         const strategy = await strategyService.getStrategyById(strategy_id);
         const game = await gameService.getGameById(game_id);
-        socket.to(game.room_id).emit("strategyChosen", strategy);
+        socket.to(game.id).emit("strategyChosen", strategy);
     }catch(err) {
         console.error(`Error Choice Strategy Handler ${err.message}`);
     }

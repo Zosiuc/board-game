@@ -50,14 +50,13 @@ class StrategyService {
                             s?.category_id,
                             s.name,
                             s?.icon,
-                            s?.color,
-                            s?.isChosen
+                            s?.color
                         )
                 }
 
             );
         } catch (err) {
-            console.error("❌ Error fetching strategies:", err.message);
+            console.error("❌ Error fetching strategies:", err);
             return [];
         }
     }

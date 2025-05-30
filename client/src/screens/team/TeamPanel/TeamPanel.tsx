@@ -8,10 +8,13 @@ import {useParams} from "react-router-dom";
 import VennBoard from "../../../components/game/vennBoard/VennBoard";
 import {socket} from "../../../socket/client";
 import {useGameContext} from "../../../context/GameContext";
+import {useTranslation} from "react-i18next";
+import {getGameModeratorListener, getModeratorListener} from "../../../socket/moderatorListeners";
 
 const TeamPanel: React.FC = () => {
+    const {t} = useTranslation();
     const [loading, setLoading] = useState(true);
-    const {contextGameId} = useGameContext();
+    const {contextGameId,msg, gameActive,setMsg} = useGameContext();
     const [team, setTeam] = useState<{
         id: string,
         name: string,
@@ -20,6 +23,7 @@ const TeamPanel: React.FC = () => {
         points: number,
         color:string,
         current_tileId: string,
+        socket_id: string,
         created_at: string
     }|null>(null)
     const [teamStrategy, setTeamStrategy] = useState<{
@@ -30,10 +34,33 @@ const TeamPanel: React.FC = () => {
         color: string
     } | null>(null);
     const {teamId} = useParams();
-
+    const [moderator, setModerator] = useState<{
+        id: string,
+        name: string,
+        game_id: string,
+        created_at: string
+    } | null>(null);
     const [roundNumber, setRoundNumber] = useState<number>(0);
     const [question, setQuestion] = useState<{id:number,category_id:number,strategy_id:number,lang:string,content:string}|null>(null);
     const [answer, setAnswer] = useState<string | null>(null);
+
+    const loadModerator = async () => {
+        try{
+            const gameId = sessionStorage.getItem("game_id")
+            if (!gameId) return setMsg("No game id found.");
+            const mod = await getGameModeratorListener(gameId);
+            if (!mod) return setMsg("no game id found.");
+            setModerator(mod);
+            setMsg(`game master: ${mod?.name} for Game: ${mod?.game_id}`)
+            setLoading(false);
+
+        }catch (err) {
+            setLoading(false);
+            setMsg(`${err}`);
+
+        }
+    }
+
     const loadTeam = async () => {
         try {
             const team = await getTeamListener(teamId ?? "");
@@ -57,32 +84,62 @@ const TeamPanel: React.FC = () => {
         setLoading(false);
     }
 
+
     const handleSubmitAnswer = () => {
         socket.emit("submit_answer", contextGameId, teamId, question?.id  , answer, roundNumber)
     }
 
     useEffect(() => {
 
-        setRoundNumber(0)
-        loadTeam().then(r => loadStrategy());
+
+        loadTeam().then(r =>{
+            loadStrategy().then(()=> loadModerator())
+        });
+
+        socket.emit("reconnecting")
 
         socket.on("question", (myQuestion: React.SetStateAction<{ id: number; category_id: number; strategy_id: number; lang: string; content: string; } | null>) => {
             setQuestion(myQuestion);
         });
         return () => {
-            socket.off("team")
-            socket.off("question")
+            socket.off("question");
+            socket.off("reconnecting")
         }
 
     }, []);
 
+    useEffect(() => {
+        if (!socket || !contextGameId) return;
+
+        // Wanneer de socket connecteert of reconnecteert
+        const handleConnect = () => {
+            socket.emit('joinGame', contextGameId);
+        };
+
+        socket.on('connect', handleConnect);
+
+        // Belangrijk: bij unmount opruimen
+        return () => {
+            socket.off('connect', handleConnect);
+        };
+    }, [socket, contextGameId]);
 
 
-    if (loading) return (<div className="team-game"><strong className="loading">Loading...</strong></div>);
+
+    if (loading) return (<div className="team-game">
+        <p className={'loading'}>
+            {t('Loading')} <span className="wait" aria-hidden="true"></span>
+        </p>
+    </div>);
     return (
         <div className="team-game">
+            {msg &&
+                <div className="message">
+                    <strong>{msg}</strong>
+                </div>
+            }
             <div className="boardGrid-container">
-                <VennBoard isPlayer={true} currentTeam={team} />
+            <VennBoard isPlayer={true} currentTeam={team} />
             </div>
             {question&&<div className="question_pop" >
                 <div className="question">

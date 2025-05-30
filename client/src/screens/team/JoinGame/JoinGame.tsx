@@ -3,7 +3,7 @@ import "./join-game.scss";
 import Footer from "../../../components/footer/Footer";
 import {useNavigate} from "react-router-dom";
 import Button from "../../../components/Button/Button";
-import {addTeamListener} from "../../../socket/teamListeners";
+import {addTeamListener, getRoomTeamsListener, getTeamListener} from "../../../socket/teamListeners";
 import {getGameListener} from "../../../socket/gameListeners";
 import {getStrategiesListener} from "../../../socket/strategyListeners";
 
@@ -15,12 +15,24 @@ const Logo =  "/Logo.png";
 const JoinGame = () => {
     const { t } = useTranslation();
     const {setContextGameId,setContextTeamId} = useGameContext();
+    const {contextStrategies, setContextStrategies} = useGameContext();
+    const {contextTeams} = useGameContext();
     const [gameId, setGameId] = useState("");
     const [teamId, setTeamId] = useState<string>("");
     const [teamName, setTeamName] = useState<string>("");
     const [strategy, setStrategy] = useState<string>("lunar");
-    const [strategies, setStrategies] = useState<{id:number,category_id:number,name:string,icon:string,color:string}[]|null>(null);
     const [loading, setLoading] = useState(true);
+    const [gameAvailable, setGameAvailable] = useState<boolean>(false);
+    const [availableStrategies, setAvailableStrategies] = useState<{
+        id: number,
+        category_id: number,
+        name: string,
+        icon: string,
+        color: string
+    }[] | null>()
+    const [inputValue, setInputValue] = useState('');
+    const [debouncedValue, setDebouncedValue] = useState('');
+    const [fout, setFout] = useState<string>('');
     const navigate = useNavigate();
 
     // Functie om een random team ID te genereren (standaard lengte 6)
@@ -41,16 +53,15 @@ const JoinGame = () => {
     const handelGetStrategies = async () => {
         try {
             const response:
-                {id:number,category_id:number,name:string,icon:string,color:string,isChosen:boolean}[]|null
+                {id:number,category_id:number,name:string,icon:string,color:string}[]|null
                 = await getStrategiesListener();
 
             if (!response ) {
                 alert("Geen strategies gevonden");
                 return;
             }
-            const filteredStrategies = response.filter(e => !e.isChosen)
-
-            setStrategies(filteredStrategies);
+            const filteredStrategies = response.filter(s => s.name !== "Chance" && s.name !== "Megatrends" && s.name !== "Sales management");
+            setContextStrategies(filteredStrategies);
 
 
         } catch (err) {
@@ -63,9 +74,7 @@ const JoinGame = () => {
         try {
             event.preventDefault();
             setLoading(true)
-            if (!gameId || !teamName || !strategy) return alert(`Not valid data`);
-            const game = await getGameListener(gameId);
-            if (!game)  return;
+            if (!gameId || !teamName || !strategy) return alert(`All fields required! ${gameId}, ${teamName}, ${strategy}`);
             sessionStorage.setItem("game_id", gameId)
             const team = await addTeamListener(teamId, teamName, strategy, gameId );
             sessionStorage.setItem("team_id", JSON.stringify(team.id));
@@ -75,11 +84,54 @@ const JoinGame = () => {
 
             navigate(`/game/${team?.id}`)
         }catch (error) {
+            setLoading(false)
             console.error(error);
             alert(`No game found with room id ${gameId}`)
         }
 
     };
+
+    const checkStrategyInUse = async (game_id:string) => {
+        const allTeams = await getRoomTeamsListener(game_id);
+        if (allTeams.length <= 0) return setAvailableStrategies(contextStrategies);
+        const strategiesIdInUse = allTeams?.map((team) => team.strategy_id);
+        const availableStrategies = contextStrategies?.filter(strategy => !strategiesIdInUse.includes(strategy.id));
+        setAvailableStrategies(availableStrategies)
+
+    }
+
+    const checkGameId = async (id:string) => {
+        try {
+            const game = await getGameListener(id);
+            if (!game) return
+            const allTeams = await getRoomTeamsListener(id);
+            if (game.teams_count <= allTeams.length) return setFout(`Room ${id} is full`);
+            setGameId(id);
+            checkStrategyInUse(id).then(() => setGameAvailable(true));
+
+
+        }catch (error) {
+            console.error(error);
+            setFout(`No game found with room id ${id}`);
+            document.getElementById("game_id")?.classList.add("fout");
+
+        }
+    }
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(inputValue);
+        }, 500); // 500ms wachten
+
+        return () => {
+            clearTimeout(handler); // Reset timer als gebruiker weer typt
+        };
+    }, [inputValue]);
+
+    useEffect(() => {
+        if (debouncedValue) {
+            checkGameId(debouncedValue);
+        }
+    }, [debouncedValue]);
 
     useEffect(() => {
         generateTeamId();
@@ -87,7 +139,11 @@ const JoinGame = () => {
 
     }, [])
 
-    if (loading) return (<div className="join-game"><strong className="loading">Loading...</strong></div>);
+    if (loading) return (<div className="join-game">
+        <p className={'loading'}>
+            {t('Loading')} <span className="wait" aria-hidden="true"></span>
+        </p>
+    </div>);
     return (
         <div className="join-game">
             <img className="logo" src={Logo} alt="Logo"/>
@@ -96,13 +152,21 @@ const JoinGame = () => {
                 onSubmit={handleJoinGame}>
                 <label>{t('yourTeamId')}<h4>{teamId}</h4></label>
                 <input
+                    id={"game_id"}
                     className="join-game-input"
                     type="text"
                     placeholder={t('roomCode')}
-                    value={gameId}
-                    onChange={(e) => setGameId(e.target.value)}
+                    value={inputValue}
+                    onChange={ (e) =>{
+                        document.getElementById("game_id")?.classList.remove("fout");
+                        setFout('')
+                         setInputValue(e.target.value)
+                        }}
                     required
                 />
+                {fout &&
+                <strong className={"fout_massage"}>{fout}</strong>
+                }
                 <input
                     className="join-game-input"
                     type="text"
@@ -111,6 +175,7 @@ const JoinGame = () => {
                     onChange={(e) => setTeamName(e.target.value)}
                     required
                 />
+                {gameAvailable &&
                 <select
                     className="join-game-input"
                     onChange={(e) => setStrategy(e.target.value)}
@@ -121,13 +186,13 @@ const JoinGame = () => {
                         {t('chooseStrategy')}
                     </option>
 
-                    {strategies?.map((strategy1,index) => (
+                    {availableStrategies?.map((strategy1,index) => (
                         <option key={index}  value={strategy1.name}>
                              {strategy1.name}</option>
                     ))}
-                </select>
+                </select>}
 
-                <Button text={t('joinGame')} type="submit"/>
+                <Button text={t('joinGame')} type="submit" show={!gameAvailable}/>
             </form>
             <Footer/>
         </div>

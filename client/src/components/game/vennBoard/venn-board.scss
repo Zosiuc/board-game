@@ -10,6 +10,20 @@
   border-radius: 8px;
   perspective: 800px;
 
+  .game_onActive{
+    display: flex;
+    position: relative;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    min-width: 850px;
+    height: 780px;
+    border-radius: 8px;
+    perspective: 800px;
+    background-color: var(--onActiveBord);
+    z-index: 10;
+  }
+
   .tile.team-here {
     border: 3px solid rgba(255, 255, 255, 0.47);
   }

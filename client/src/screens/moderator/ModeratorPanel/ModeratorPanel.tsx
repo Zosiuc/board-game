@@ -3,9 +3,14 @@ import "./moderator-panel.scss";
 import Footer from "../../../components/footer/Footer";
 import VennBoard from "../../../components/game/vennBoard/VennBoard";
 import {socket} from "../../../socket/client";
+import {useTranslation} from "react-i18next";
+import {useGameContext} from "../../../context/GameContext";
+
 
 
 const ModeratorPanel = () => {
+    const {t} = useTranslation();
+    const {gameActive, setGameActive, contextGameId,setMsg, msg} = useGameContext();
     const [moderator, setModerator] = useState<{
         id: string,
         name: string,
@@ -71,6 +76,7 @@ const ModeratorPanel = () => {
 
     useEffect(() => {
         const game_id = sessionStorage.getItem("game_id");
+        socket.emit("reconnecting")
         if (!game_id) return console.error('gameId not found');
         const moderator_id = sessionStorage.getItem("moderator_id");
         if (!moderator_id) return console.error('moderatorId not found');
@@ -106,6 +112,13 @@ const ModeratorPanel = () => {
 
         })
 
+        if (!socket || !contextGameId) return;
+        // Wanneer de socket connecteert of reconnecteert
+        const handleConnect = () => {
+            socket.emit('joinGame', contextGameId);
+        };
+        socket.on('connect', handleConnect);
+
 
         return () => {
             socket.off("getModerator");
@@ -114,10 +127,12 @@ const ModeratorPanel = () => {
             socket.off("getSameRoomTeams");
             socket.off("getStrategies");
             socket.off("get_question");
+            socket.off('connect', handleConnect);
+
 
 
         };
-    }, []);
+    }, [socket, contextGameId]);
 
     const judgeAnswer = (queAntTeams_id: number, score: number, feedback: string) => {
         if (queAntTeams){
@@ -126,23 +141,43 @@ const ModeratorPanel = () => {
         socket.emit("judge_answer", queAntTeams);
         }
     }
+    const handleStartGame = async () => {
 
-    if (loading) return (<div className="moderator-game"><strong  className="loading">Loading...</strong></div>);
+        socket.emit('startGame', contextGameId)
+    }
+
+    const  handleNextRound = () => {
+
+    }
+
+    if (loading) return (<div className="moderator-game">
+        <p className={'loading'}>
+            {t('Loading')} <span className="wait" aria-hidden="true"></span>
+        </p>
+    </div>);
 
 
     return (
         <div className="moderator-game">
             <header>
+                {!gameActive &&
+                    <button className={'start_game_button'} onClick={handleStartGame}>Start the Game</button> ||
+                    <button className={'start_game_button'} onClick={handleNextRound}>Next round</button>
+                }
                 <label>Room Code: </label>
                 <h3>{game?.id}</h3>
                 <label>Moderator: </label>
                 <strong>{moderator?.name}</strong>-
                 <h3>{moderator?.id}</h3>
             </header>
-
+            {msg &&
+                <div className="message">
+                    <strong>{msg}</strong>
+                </div>
+            }
             {<div className="game-board">
                 {waiting ? <h1 className="waiting-text">Waiting for Teams....</h1> :
-                    <VennBoard isPlayer={false} currentTeam={null}/>}
+                    <VennBoard isPlayer={false} currentTeam={null} />}
                 {queAntTeams && <div className="answers-section">
                     <h3>Ingezonden antwoord van {teams?.find(t => t.id === queAntTeams.team_id)?.name}</h3>
                     <div className={'answers'}>

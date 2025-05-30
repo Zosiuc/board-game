@@ -30,13 +30,16 @@ async function handleCreateGame(io,socket, game_id,category_name,game_rounds,tea
         throw err;
     }
 }
-async function handleStartGame(socket, game_id) {
+async function handleStartGame(io,socket, game_id) {
     try {
-        const result = await gameService.gameStarted(game_id);
-        socket.to(result.id).emit("gameStarted", result);
+        await gameService.gameStarted(game_id);
+        //socket.emit("gameStarted", {msg:'Game started !'});
+        const clients = await io.in(game_id).fetchSockets();
+        console.log(`Clients in room ${game_id}:`, clients.map(c => c.id));
+        io.to(game_id).emit("gameStarted", 'Game started !');
     }catch(err){
         console.error(`Error Starting Game Handler: ${err.message}`);
-        socket.emit("gameStarted", null);
+        socket.emit("gameStarted", err);
         throw err;
     }
 }

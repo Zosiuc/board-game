@@ -52,7 +52,7 @@ export async function getGameListener(game_id: string): Promise<{
             });
         } catch (err) {
             console.log("Error:", err);
-            return reject(null);
+            return reject(`${err}`);
         }
     });
 }
@@ -89,3 +89,4 @@ export async function getGameTilesListener(game_id: string): Promise<{
         }
     });
 }
+

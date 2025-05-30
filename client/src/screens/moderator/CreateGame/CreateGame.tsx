@@ -97,7 +97,11 @@ const CreateGame: React.FC = () => {
     }, []);
 
 
-    if (loading) return (<div className="creatGame-page"><strong className={"loading"}>Loading...</strong></div>);
+    if (loading) return (<div className="creatGame-page">
+        <p className={'loading'}>
+        {t('Loading')} <span className="wait" aria-hidden="true"></span>
+        </p>
+    </div>);
 
 
     return (

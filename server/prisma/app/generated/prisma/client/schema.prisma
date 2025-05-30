@@ -64,7 +64,6 @@ model Strategy {
   name        String     @unique
   icon        String?
   color       String?
-  isChosen    Boolean    @default(false)
   Question    Question[]
   Team        Team[]
 }

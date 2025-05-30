@@ -55,7 +55,7 @@ export async function getRoomTeamsListener(game_id: string): Promise<{
     socket_id: string,
     points:number,
     color: string,
-    current_tileId:string
+    current_tileId:string,
     created_at: string
 }[]|[]> {
     return new Promise((resolve, reject) => {

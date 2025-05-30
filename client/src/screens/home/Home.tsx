@@ -2,8 +2,8 @@ import * as React from "react";
 import {useEffect} from "react";
 import "react-dom"
 import "./home.scss"
-import Button from "../../components/Button/Button.tsx"
-import Footer from "../../components/footer/Footer.tsx";
+import Button from "../../components/Button/Button"
+import Footer from "../../components/footer/Footer";
 import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 const Logo = "/Logo.png";
@@ -43,8 +43,8 @@ const Home: React.FC = () => {
                 <div className="Home-buttons">
                     <Button text={t("createGame")} onClick={handelCreateGameButton}/>
                     <Button text={t("joinGame")} onClick={handelJoinGameButton}/>
-                    <Button text={t("settings")} onClick={handelSettingButton}/>
-                    <Button text={t("loadGame")} onClick={handelLoadGameButton}/>
+                    {/*<Button text={t("settings")} onClick={handelSettingButton}/>
+                    <Button text={t("loadGame")} onClick={handelLoadGameButton}/>*/}
                 </div>
 
             </div>

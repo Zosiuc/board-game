@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './venn-board.scss';
-import {socket} from "../../../socket/client.ts";
-import {useGameContext} from "../../../context/GameContext.tsx";
+import {socket} from "../../../socket/client";
+import {useGameContext} from "../../../context/GameContext";
 import {useParams} from "react-router-dom";
 
 
@@ -29,7 +29,7 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
         6: { x: 0,   y: 180 }     // back
     });
     const diceRef = useRef<HTMLDivElement>(null);
-    const {contextGameId} = useGameContext();
+    const {contextGameId, gameActive} = useGameContext();
     const {teamId} = useParams();
     const [onClickedTiles,setOnClickedTiles] = useState<string[]>([]);
     const [tiles , setTiles] = useState<{
@@ -107,10 +107,17 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
 
     }, [contextGameId]);
 
-    return (
-        <div className="venn-wrapper">
 
-            {tiles?.map((tile,index) => (
+    return (
+
+        <div className="venn-wrapper">
+            {!gameActive &&
+            <div className="game_onActive" >
+                <strong>The game will start once the moderator begins the session.<br/>
+                Please wait for the moderator to start the game.</strong>
+            </div>
+            }
+            {gameActive && tiles?.map((tile,index) => (
                 <button
                     key={index}
                     className={` ${isPlayer && !tile.clicked && possibleTilesId?.includes(tile.id)? `active-tile` : 'disable-tile'} ${currentTeam?.current_tileId === tile.id ? 'team-here' : ''} `}
@@ -128,7 +135,7 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
 
                 />
             ))}
-            {isPlayer&&
+            {gameActive && isPlayer&&
                 <button className="move-button" onClick={rollDice}>
                     <div className="dice" ref={diceRef}>
                         <div className="face front"/>

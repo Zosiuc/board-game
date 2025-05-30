@@ -7,15 +7,14 @@ export async function getStrategiesListener(): Promise<{
     category_id: number,
     name: string,
     icon: string,
-    color: string,
-    isChosen:boolean
+    color: string
 }[] | null> {
     return new Promise((resolve, reject) => {
         socket.emit("getStrategies");
 
         socket.off("strategies").on("strategies", (data: {
             err?: string;
-            strategies?: { id: number, category_id: number, name: string, icon: string, color: string, isChosen:boolean }[]
+            strategies?: { id: number, category_id: number, name: string, icon: string, color: string }[]
         }) => {
             if (data.err) {
                 console.error("Fout bij het ophalen van strategies", data.err);
