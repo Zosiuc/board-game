@@ -1,11 +1,11 @@
 const CategoryService = require("../../services/CategoryService");
 const GameService = require("../../services/GameService");
-const StrategyService = require("../../services/strategyService");
+const StrategyService = require("../../services/StrategyService");
 const ModeratorService = require("../../services/ModeratorService");
 const QuestionService = require("../../services/QuestionService");
 const TeamService = require("../../services/TeamService");
 const TeamQueAnsService = require("../../services/TeamQueAnsService");
-const TileService = require("../../services/tileService");
+const TileService = require("../../services/TileService");
 
 
 module.exports = {
