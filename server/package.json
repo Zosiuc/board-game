@@ -5,7 +5,7 @@
   "scripts": {
     "setup": "node ./infra/use-cases/Setup/setupDatabase.js",
     "importdata": "node ./infra/use-cases/Setup/importData.js",
-    "start": "nodemon ./app.js",
+    "start": "node ./app.js",
     "test": "jest",
     "server": "nodemon ./app.js",
     "client": "npm start --prefix ../client ",
