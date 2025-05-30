@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from "react";
 import "./join-game.scss";
-import Footer from "../../../components/footer/Footer.tsx";
+import Footer from "../../../components/footer/Footer";
 import {useNavigate} from "react-router-dom";
-import Button from "../../../components/Button/Button.tsx";
-import {addTeamListener} from "../../../socket/teamListeners.ts";
-import {getGameListener} from "../../../socket/gameListeners.ts";
-import {getStrategiesListener} from "../../../socket/strategyListeners.ts";
+import Button from "../../../components/Button/Button";
+import {addTeamListener} from "../../../socket/teamListeners";
+import {getGameListener} from "../../../socket/gameListeners";
+import {getStrategiesListener} from "../../../socket/strategyListeners";
 
 import { useTranslation } from "react-i18next";
-import {useGameContext} from "../../../context/GameContext.tsx";
+import {useGameContext} from "../../../context/GameContext";
 const Logo =  "/Logo.png";
 
 
@@ -20,6 +20,7 @@ const JoinGame = () => {
     const [teamName, setTeamName] = useState<string>("");
     const [strategy, setStrategy] = useState<string>("lunar");
     const [strategies, setStrategies] = useState<{id:number,category_id:number,name:string,icon:string,color:string}[]|null>(null);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     // Functie om een random team ID te genereren (standaard lengte 6)
@@ -48,8 +49,9 @@ const JoinGame = () => {
                 return;
             }
             const filteredStrategies = response.filter(e => !e.isChosen)
-            console.log("QQQ",response);
+
             setStrategies(filteredStrategies);
+
 
         } catch (err) {
             console.error(`Fout bij het ophalen van categorieën: ${err}`);
@@ -60,6 +62,7 @@ const JoinGame = () => {
     const handleJoinGame = async (event: React.FormEvent) => {
         try {
             event.preventDefault();
+            setLoading(true)
             if (!gameId || !teamName || !strategy) return alert(`Not valid data`);
             const game = await getGameListener(gameId);
             if (!game)  return;
@@ -80,10 +83,11 @@ const JoinGame = () => {
 
     useEffect(() => {
         generateTeamId();
-        handelGetStrategies();
+        handelGetStrategies().then(()=> setLoading(false));
 
     }, [])
 
+    if (loading) return (<div className="join-game"><strong className="loading">Loading...</strong></div>);
     return (
         <div className="join-game">
             <img className="logo" src={Logo} alt="Logo"/>

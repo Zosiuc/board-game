@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
 import "./create-game.scss";
-import Footer from "../../../components/footer/Footer.tsx";
-import Button from "components/Button/Button.tsx";
-import {addGameListener} from "../../../socket/gameListeners.ts";
-import {addModeratorListener} from "../../../socket/moderatorListeners.ts";
-import {getCategoriesListener} from "../../../socket/categoryListeners.ts";
+import Footer from "../../../components/footer/Footer";
+import Button from "components/Button/Button";
+import {addGameListener} from "../../../socket/gameListeners";
+import {addModeratorListener} from "../../../socket/moderatorListeners";
+import {getCategoriesListener} from "../../../socket/categoryListeners";
 import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {useGameContext} from "../../../context/GameContext.tsx";
+import {useGameContext} from "../../../context/GameContext";
 
 
 
@@ -37,6 +37,7 @@ const CreateGame: React.FC = () => {
     const [totalTeams, setTotalTeams] = useState<number>(2);
     const [categories, setCategories] = useState<{id:number,name:string}[] | null>(null);
     const [category, setCategory] = useState<string>("general");
+    const [loading, setLoading] = useState<boolean>(true);
 
     const handelGetCategories = async ():Promise<void> => {
         try {
@@ -58,6 +59,7 @@ const CreateGame: React.FC = () => {
     const handelCreateGame = async (event: { preventDefault: () => void; }) => {
         try {
             event.preventDefault();
+            setLoading(true);
             if (!gameId) return alert("No game id found")
             const lang = document.documentElement.lang;
             const responseGameId = await addGameListener(gameId,category,rounds,totalTeams,lang);
@@ -90,10 +92,12 @@ const CreateGame: React.FC = () => {
 
     useEffect(() => {
         setGameId(generateRoomCode());
-        handelGetCategories();
+        handelGetCategories().then(()=> setLoading(false));
 
     }, []);
 
+
+    if (loading) return (<div className="creatGame-page"><strong className={"loading"}>Loading...</strong></div>);
 
 
     return (

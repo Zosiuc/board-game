@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import "./moderator-panel.scss";
-import Footer from "../../../components/footer/Footer.tsx";
-import VennBoard from "../../../components/game/vennBoard/VennBoard.tsx";
-import {socket} from "../../../socket/client.ts";
+import Footer from "../../../components/footer/Footer";
+import VennBoard from "../../../components/game/vennBoard/VennBoard";
+import {socket} from "../../../socket/client";
 
 
 const ModeratorPanel = () => {
@@ -83,6 +83,8 @@ const ModeratorPanel = () => {
         socket.emit("loadGame", game_id)
         socket.on("game", (game) => {
             setGame(game)
+            setLoading(false);
+            setWaiting(false);
         });
 
 
@@ -113,8 +115,7 @@ const ModeratorPanel = () => {
             socket.off("getStrategies");
             socket.off("get_question");
 
-            setLoading(false);
-            setWaiting(false);
+
         };
     }, []);
 
@@ -126,12 +127,7 @@ const ModeratorPanel = () => {
         }
     }
 
-    if (loading) {
-        return (
-            <h1> Loading ...</h1>
-        )
-
-    }
+    if (loading) return (<div className="moderator-game"><strong  className="loading">Loading...</strong></div>);
 
 
     return (

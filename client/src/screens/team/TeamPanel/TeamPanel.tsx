@@ -1,13 +1,13 @@
 import React, { useEffect, useState} from 'react';
 import "./team-panel.scss"
-import Footer from "../../../components/footer/Footer.tsx";
+import Footer from "../../../components/footer/Footer";
 
-import {getStrategiesListener} from "../../../socket/strategyListeners.ts";
-import { getTeamListener} from "../../../socket/teamListeners.ts";
+import {getStrategiesListener} from "../../../socket/strategyListeners";
+import { getTeamListener} from "../../../socket/teamListeners";
 import {useParams} from "react-router-dom";
-import VennBoard from "../../../components/game/vennBoard/VennBoard.tsx";
-import {socket} from "../../../socket/client.ts";
-import {useGameContext} from "../../../context/GameContext.tsx";
+import VennBoard from "../../../components/game/vennBoard/VennBoard";
+import {socket} from "../../../socket/client";
+import {useGameContext} from "../../../context/GameContext";
 
 const TeamPanel: React.FC = () => {
     const [loading, setLoading] = useState(true);
@@ -51,7 +51,7 @@ const TeamPanel: React.FC = () => {
         const strategies = await getStrategiesListener();
         const team = await getTeamListener(teamId ?? "");
 
-        const str =strategies?.find(strategy => strategy.id === team?.strategy_id);
+        const str =strategies?.find((strategy: { id: any; }) => strategy.id === team?.strategy_id);
         if (!str) return alert("No strategies found.");
         setTeamStrategy(str)
         setLoading(false);
@@ -66,7 +66,7 @@ const TeamPanel: React.FC = () => {
         setRoundNumber(0)
         loadTeam().then(r => loadStrategy());
 
-        socket.on("question", (myQuestion) => {
+        socket.on("question", (myQuestion: React.SetStateAction<{ id: number; category_id: number; strategy_id: number; lang: string; content: string; } | null>) => {
             setQuestion(myQuestion);
         });
         return () => {
@@ -78,7 +78,7 @@ const TeamPanel: React.FC = () => {
 
 
 
-    if (loading) return (<div className="team-game"><h1>Loading...</h1></div>);
+    if (loading) return (<div className="team-game"><strong className="loading">Loading...</strong></div>);
     return (
         <div className="team-game">
             <div className="boardGrid-container">

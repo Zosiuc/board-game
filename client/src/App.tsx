@@ -1,17 +1,17 @@
 import "./App.scss"
 
-import Home from "./screens/home/Home.tsx";
+import Home from "./screens/home/Home";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import {GameProvider} from "./context/GameContext.tsx";
-import CreateGame from "./screens/moderator/CreateGame/CreateGame.tsx";
-import Setting from "./screens/setting/Setting.tsx";
-import JoinGame from "./screens/team/JoinGame/JoinGame.tsx";
-import LoadGame from "./screens/moderator/LoadGame/LoadGame.tsx";
-import TeamPanel from "./screens/team/TeamPanel/TeamPanel.tsx";
-import ModeratorPanel from "./screens/moderator/ModeratorPanel/ModeratorPanel.tsx";
-import ModeratorResult from "./screens/results/ModeratorResult/ModeratorResult.tsx";
-import TeamResult from "./screens/results/TeamResults/TeamResult.tsx";
-import Fout from "./screens/fout/FoutPage.tsx";
+import {GameProvider} from "./context/GameContext";
+import CreateGame from "./screens/moderator/CreateGame/CreateGame";
+import Setting from "./screens/setting/Setting";
+import JoinGame from "./screens/team/JoinGame/JoinGame";
+import LoadGame from "./screens/moderator/LoadGame/LoadGame";
+import TeamPanel from "./screens/team/TeamPanel/TeamPanel";
+import ModeratorPanel from "./screens/moderator/ModeratorPanel/ModeratorPanel";
+import ModeratorResult from "./screens/results/ModeratorResult/ModeratorResult";
+import TeamResult from "./screens/results/TeamResults/TeamResult";
+import Fout from "./screens/fout/FoutPage";
 
 
 function App() {
