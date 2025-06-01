@@ -48,7 +48,7 @@ class StrategyService {
                         return new Strategy(
                             s?.id,
                             s?.category_id,
-                            s.name,
+                            s?.name,
                             s?.icon,
                             s?.color
                         )

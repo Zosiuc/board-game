@@ -26,7 +26,7 @@
     align-content: center;
     font-size: 32px;
     font-weight: bolder;
-    margin: 40% auto;
+    margin: 40px auto;
     padding: 20px;
     border-radius: 7px;
     box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3); ;
@@ -278,6 +278,34 @@
       }
 
     }
+
+  }
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .wait {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 5px dotted;
+    border-radius: 50%;
+    border-color: white white white var(--text-price);
+    animation: spin 1s linear infinite;
+    margin-left: 8px; /* optioneel voor wat ruimte tussen tekst en spinner */
+  }
+
+  .fout {
+    border-color: red;
+    background-color: rgba(255,55,18,0.2);
+  }
+  .fout_massage{
+    color:red;
   }
 
 

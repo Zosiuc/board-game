@@ -89,6 +89,7 @@ const ModeratorPanel = () => {
         socket.emit("loadGame", game_id)
         socket.on("game", (game) => {
             setGame(game)
+            if (game.status === "active" ) setGameActive(true)
             setLoading(false);
             setWaiting(false);
         });
@@ -103,7 +104,9 @@ const ModeratorPanel = () => {
 
         socket.emit("getSameRoomTeams", game_id);
         socket.on("sameRoomTeams", (teams) => {
+            if (!teams) return
             setTeams(teams);
+            setGameActive(true)
         });
 
         socket.off("new_answer").once("new_answer", (queAnsTeams, question) => {

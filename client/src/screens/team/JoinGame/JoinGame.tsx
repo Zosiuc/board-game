@@ -3,7 +3,7 @@ import "./join-game.scss";
 import Footer from "../../../components/footer/Footer";
 import {useNavigate} from "react-router-dom";
 import Button from "../../../components/Button/Button";
-import {addTeamListener, getRoomTeamsListener, getTeamListener} from "../../../socket/teamListeners";
+import {addTeamListener, getRoomTeamsListener} from "../../../socket/teamListeners";
 import {getGameListener} from "../../../socket/gameListeners";
 import {getStrategiesListener} from "../../../socket/strategyListeners";
 
@@ -15,7 +15,12 @@ const Logo =  "/Logo.png";
 const JoinGame = () => {
     const { t } = useTranslation();
     const {setContextGameId,setContextTeamId} = useGameContext();
-    const {contextStrategies, setContextStrategies} = useGameContext();
+    const [strategies, setStrategies] = useState <{id: number,
+        category_id: number,
+        name: string,
+        icon: string,
+        color: string
+}[] | null>()
     const {contextTeams} = useGameContext();
     const [gameId, setGameId] = useState("");
     const [teamId, setTeamId] = useState<string>("");
@@ -52,6 +57,7 @@ const JoinGame = () => {
     };
     const handelGetStrategies = async () => {
         try {
+            setLoading(true);
             const response:
                 {id:number,category_id:number,name:string,icon:string,color:string}[]|null
                 = await getStrategiesListener();
@@ -61,8 +67,9 @@ const JoinGame = () => {
                 return;
             }
             const filteredStrategies = response.filter(s => s.name !== "Chance" && s.name !== "Megatrends" && s.name !== "Sales management");
-            setContextStrategies(filteredStrategies);
-
+            setStrategies(filteredStrategies);
+            setAvailableStrategies(filteredStrategies);
+            setLoading(false);
 
         } catch (err) {
             console.error(`Fout bij het ophalen van categorieën: ${err}`);
@@ -91,28 +98,35 @@ const JoinGame = () => {
 
     };
 
-    const checkStrategyInUse = async (game_id:string) => {
+    /*const checkStrategyInUse = async (game_id:string) => {
+        setLoading(true);
         const allTeams = await getRoomTeamsListener(game_id);
-        if (allTeams.length <= 0) return setAvailableStrategies(contextStrategies);
+        if (allTeams.length <= 0) {
+            handelGetStrategies()
+            return setLoading(false);
+        }
         const strategiesIdInUse = allTeams?.map((team) => team.strategy_id);
-        const availableStrategies = contextStrategies?.filter(strategy => !strategiesIdInUse.includes(strategy.id));
+        const availableStrategies = strategies?.filter(strategy => !strategiesIdInUse.includes(strategy.id));
         setAvailableStrategies(availableStrategies)
+        setLoading(false)
 
-    }
+    }*/
 
     const checkGameId = async (id:string) => {
         try {
             const game = await getGameListener(id);
-            if (!game) return
+            if (!game) return setGameAvailable(false)
             const allTeams = await getRoomTeamsListener(id);
             if (game.teams_count <= allTeams.length) return setFout(`Room ${id} is full`);
             setGameId(id);
-            checkStrategyInUse(id).then(() => setGameAvailable(true));
+            setGameAvailable(true)
+            //checkStrategyInUse(id).then(() => setGameAvailable(true));
 
 
         }catch (error) {
             console.error(error);
             setFout(`No game found with room id ${id}`);
+            setGameAvailable(false)
             document.getElementById("game_id")?.classList.add("fout");
 
         }
@@ -135,7 +149,9 @@ const JoinGame = () => {
 
     useEffect(() => {
         generateTeamId();
-        handelGetStrategies().then(()=> setLoading(false));
+        handelGetStrategies().then(()=> {
+            setLoading(false)
+        });
 
     }, [])
 

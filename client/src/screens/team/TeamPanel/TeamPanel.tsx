@@ -14,7 +14,7 @@ import {getGameModeratorListener, getModeratorListener} from "../../../socket/mo
 const TeamPanel: React.FC = () => {
     const {t} = useTranslation();
     const [loading, setLoading] = useState(true);
-    const {contextGameId,msg, gameActive,setMsg} = useGameContext();
+    const {contextGameId,msg, gameActive,setMsg, setGameActive} = useGameContext();
     const [team, setTeam] = useState<{
         id: string,
         name: string,
@@ -90,7 +90,11 @@ const TeamPanel: React.FC = () => {
     }
 
     useEffect(() => {
-
+        socket.emit("loadGame", sessionStorage.getItem("game_id"))
+        socket.on("game", (game) => {
+            if (game.status === "active" ) setGameActive(true)
+            setLoading(false);
+        });
 
         loadTeam().then(r =>{
             loadStrategy().then(()=> loadModerator())

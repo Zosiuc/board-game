@@ -212,6 +212,7 @@ export const GameProvider = ({children}: { children: ReactNode }) => {
         socket.emit("loadGame", game_id)
         socket.on("game", (game) => {
             setContextGame(game)
+            if (game.status === "active" ) setGameActive(true)
         });
 
         socket.emit("loadTiles", game_id)
