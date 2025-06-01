@@ -42,7 +42,19 @@ class StrategyService {
 
     async getStrategies() {
         try {
-            return  await prisma.strategy.findMany();
+            const results = await prisma.strategy.findMany();
+            return results.map(
+                (s) => {
+                        return new Strategy(
+                            s?.id,
+                            s?.category_id,
+                            s?.name,
+                            s?.icon,
+                            s?.color
+                        )
+                }
+
+            );
         } catch (err) {
             console.error("❌ Error fetching strategies:", err);
             return [];
