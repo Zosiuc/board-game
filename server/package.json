@@ -9,6 +9,7 @@
     "test": "jest",
     "server": "nodemon ./app.js",
     "client": "npm start --prefix ../client ",
+    "build" : "npx prisma generate",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
