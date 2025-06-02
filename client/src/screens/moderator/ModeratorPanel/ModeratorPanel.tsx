@@ -106,7 +106,7 @@ const ModeratorPanel = () => {
         socket.on("sameRoomTeams", (teams) => {
             if (!teams) return
             setTeams(teams);
-            setGameActive(true)
+    
         });
 
         socket.off("new_answer").once("new_answer", (queAnsTeams, question) => {
