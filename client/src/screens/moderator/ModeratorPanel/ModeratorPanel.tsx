@@ -88,7 +88,8 @@ const ModeratorPanel = () => {
 
         socket.emit("loadGame", game_id)
         socket.on("game", (game) => {
-            setGame(game)
+            setGame(game);
+            if (game.status === "active" ) setGameActive(true);
             setLoading(false);
             setWaiting(false);
         });
