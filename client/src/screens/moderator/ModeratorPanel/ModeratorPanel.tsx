@@ -7,10 +7,9 @@ import {useTranslation} from "react-i18next";
 import {useGameContext} from "../../../context/GameContext";
 
 
-
 const ModeratorPanel = () => {
     const {t} = useTranslation();
-    const {gameActive, setGameActive, contextGameId,setMsg, msg} = useGameContext();
+    const {gameActive, setGameActive, contextGameId, setMsg, msg} = useGameContext();
     const [moderator, setModerator] = useState<{
         id: string,
         name: string,
@@ -69,6 +68,15 @@ const ModeratorPanel = () => {
         lang: string,
         content: string
     } | null>(null);
+
+    const [savedAnswers, setSavedAnswers] = useState<{
+        answerId: number,
+        teamId: string,
+        question: string,
+        answer: string,
+        isJudged: boolean
+    }[]>([]);
+
     const [points, setPoints] = useState<number>(0);
     const [feedback, setFeedback] = useState<string>("");
     const [waiting, setWaiting] = useState(true);
@@ -89,11 +97,10 @@ const ModeratorPanel = () => {
         socket.emit("loadGame", game_id)
         socket.on("game", (game) => {
             setGame(game);
-            if (game.status === "active" ) setGameActive(true);
+            if (game.status === "active") setGameActive(true);
             setLoading(false);
             setWaiting(false);
         });
-    
 
 
         socket.emit("getStrategies")
@@ -107,12 +114,14 @@ const ModeratorPanel = () => {
         socket.on("sameRoomTeams", (teams) => {
             if (!teams) return
             setTeams(teams);
-    
+
         });
 
         socket.off("new_answer").once("new_answer", (queAnsTeams, question) => {
             setQueAntTeams(queAnsTeams);
             setQuestion(question);
+            /*setSavedAnswers((pre) =>
+                 [...pre, {queAnsTeams.id, queAnsTeams.team_id, question.content, queAnsTeams.answer, false}])*/
 
         })
 
@@ -134,15 +143,14 @@ const ModeratorPanel = () => {
             socket.off('connect', handleConnect);
 
 
-
         };
     }, [socket, contextGameId]);
 
     const judgeAnswer = (queAntTeams_id: number, score: number, feedback: string) => {
-        if (queAntTeams){
-        queAntTeams["score"] = score;
-        queAntTeams["feedback"] = feedback;
-        socket.emit("judge_answer", queAntTeams);
+        if (queAntTeams) {
+            queAntTeams["score"] = score;
+            queAntTeams["feedback"] = feedback;
+            socket.emit("judge_answer", queAntTeams);
         }
     }
     const handleStartGame = async () => {
@@ -150,7 +158,7 @@ const ModeratorPanel = () => {
         socket.emit('startGame', contextGameId)
     }
 
-    const  handleNextRound = () => {
+    const handleNextRound = () => {
 
     }
 
@@ -181,7 +189,7 @@ const ModeratorPanel = () => {
             }
             {<div className="game-board">
                 {waiting ? <h1 className="waiting-text">Waiting for Teams....</h1> :
-                    <VennBoard isPlayer={false} currentTeam={null} />}
+                    <VennBoard isPlayer={false} currentTeam={null}/>}
                 {queAntTeams && <div className="answers-section">
                     <h3>Ingezonden antwoord van {teams?.find(t => t.id === queAntTeams.team_id)?.name}</h3>
                     <div className={'answers'}>
@@ -194,7 +202,7 @@ const ModeratorPanel = () => {
                             </p>
                         </div>
                         <form className={'judge-form'}
-                              onSubmit={(e) => judgeAnswer(queAntTeams.question_id, points, feedback)}>
+                              onSubmit={() => judgeAnswer(queAntTeams.question_id, points, feedback)}>
 
                             <textarea className={'feedback-text'} placeholder={'geef jouw feedback'}
                                       onChange={(e) => setFeedback(e.target.value)}/>
