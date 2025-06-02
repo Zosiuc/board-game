@@ -98,7 +98,7 @@ const JoinGame = () => {
 
     };
 
-    /*const checkStrategyInUse = async (game_id:string) => {
+    const checkStrategyInUse = async (game_id:string) => {
         setLoading(true);
         const allTeams = await getRoomTeamsListener(game_id);
         if (allTeams.length <= 0) {
@@ -110,7 +110,7 @@ const JoinGame = () => {
         setAvailableStrategies(availableStrategies)
         setLoading(false)
 
-    }*/
+    }
 
     const checkGameId = async (id:string) => {
         try {
@@ -120,7 +120,7 @@ const JoinGame = () => {
             if (game.teams_count <= allTeams.length) return setFout(`Room ${id} is full`);
             setGameId(id);
             setGameAvailable(true)
-            //checkStrategyInUse(id).then(() => setGameAvailable(true));
+            checkStrategyInUse(id).then(() => setGameAvailable(true));
 
 
         }catch (error) {
