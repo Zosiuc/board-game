@@ -75,7 +75,34 @@
       font-family: Afacad, serif;
     }
   }
+    @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 
+  .wait {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 5px dotted;
+    border-radius: 50%;
+    border-color: white white white var(--text-price);
+    animation: spin 1s linear infinite;
+    margin-left: 8px; /* optioneel voor wat ruimte tussen tekst en spinner */
+  }
+
+  .fout {
+    border-color: red;
+    background-color: rgba(255,55,18,0.2);
+  }
+  .fout_massage{
+    color: #FF0000;
+  }
+}
 
 
 }
@@ -114,31 +141,4 @@
       }
     }
   }
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
 
-  .wait {
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    border: 5px dotted;
-    border-radius: 50%;
-    border-color: white white white var(--text-price);
-    animation: spin 1s linear infinite;
-    margin-left: 8px; /* optioneel voor wat ruimte tussen tekst en spinner */
-  }
-
-  .fout {
-    border-color: red;
-    background-color: rgba(255,55,18,0.2);
-  }
-  .fout_massage{
-    color:red;
-  }
-}
