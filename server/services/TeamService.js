@@ -32,15 +32,15 @@ class TeamService {
             where: { id }
         });
         return new Team(
-            result.id,
-            result.name,
-            result.strategy_id,
-            result.game_id,
-            result.socket_id,
-            result.points,
-            result.color,
-            result.current_tileId,
-            result.created_at
+            result?.id,
+            result?.name,
+            result?.strategy_id,
+            result?.game_id,
+            result?.socket_id,
+            result?.points,
+            result?.color,
+            result?.current_tileId,
+            result?.created_at
         );
     }
 

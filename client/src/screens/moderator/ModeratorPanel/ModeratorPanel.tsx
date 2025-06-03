@@ -5,82 +5,48 @@ import VennBoard from "../../../components/game/vennBoard/VennBoard";
 import {socket} from "../../../socket/client";
 import {useTranslation} from "react-i18next";
 import {useGameContext} from "../../../context/GameContext";
+import Popup from "../../../components/game/popup/Popup";
+
 
 
 const ModeratorPanel = () => {
     const {t} = useTranslation();
-    const {gameActive, setGameActive, contextGameId, setMsg, msg} = useGameContext();
-    const [moderator, setModerator] = useState<{
-        id: string,
-        name: string,
-        game_id: string,
-        created_at: string
-    } | null>(null);
 
-    const [game, setGame] = useState<{
-        id: string,
-        category_id: number,
-        rounds: number,
-        teams_count: number,
-        status: string,
-        lang: string,
-        master_socket: string,
-        created_at: string
-    } | null>(null);
+    const {gameActive, setGameActive, msg,setMsg} = useGameContext();
 
-    const [teams, setTeams] = useState<{
-        id: string,
-        name: string,
-        strategy_id: number,
-        game_id: string,
-        socket_id: string,
-        points: number,
-        color: string,
-        current_tiled: string
-        created_at: string
-    }[] | null>(null);
+    const {gameId} = useGameContext();
+    const {setTeamId} = useGameContext();
+    const { setTeamsQueAns} = useGameContext();
+    const { setQuestion} = useGameContext();
+    const {game, setGame} = useGameContext();
+    const {teams, setTeams} = useGameContext();
+    const {moderator,setModerator} = useGameContext();
+    const {savedAnswers, setSavedAnswers} = useGameContext();
+    const {strategies, setStrategies} = useGameContext();
 
-    const [strategies, setStrategies] = useState<{
-        id: number,
-        category_id: number,
-        name: string,
-        icon: string,
-        color: string
-    }[] | null>(null);
 
-    const [queAntTeams, setQueAntTeams] = useState<{
-        id: number,
-        game_id: string,
-        team_id: string,
-        question_id: number,
-        moderator_id: number,
-        answer: string,
-        score: number | null,
-        feedback: string,
-        round_number: number,
-        created_at: string,
-        updated_at: string
-    } | null>(null);
-    const [question, setQuestion] = useState<{
-        id: number,
-        category_id: number,
-        strategy_id: number,
-        lang: string,
-        content: string
-    } | null>(null);
-
-    const [savedAnswers, setSavedAnswers] = useState<{
-        answerId: number,
-        teamId: string,
-        question: string,
-        answer: string,
-        isJudged: boolean
-    }[]>([]);
-
-    const [points, setPoints] = useState<number>(0);
-    const [feedback, setFeedback] = useState<string>("");
+    const [show, setShow] = useState(false);
     const [waiting, setWaiting] = useState(true);
     const [loading, setLoading] = useState<boolean>(true);
+
+
+    const openPopup = (team_id:string) => {
+        console.log("open popup: ", team_id);
+        setTeamId(team_id)
+        setTeamsQueAns(savedAnswers.find(a => a.team_id === team_id)?.teamsQueAns ?? null);
+        setQuestion(savedAnswers.find(a => a.team_id === team_id)?.question ?? null);
+        setShow(!show);
+    }
+
+    const handleStartGame = async () => {
+
+        socket.emit('startGame', gameId)
+    }
+
+    const handleNextRound = () => {
+
+    }
+
 
     useEffect(() => {
         const game_id = sessionStorage.getItem("game_id");
@@ -98,6 +64,7 @@ const ModeratorPanel = () => {
         socket.on("game", (game) => {
             setGame(game);
             if (game.status === "active") setGameActive(true);
+            else setGameActive(false)
             setLoading(false);
             setWaiting(false);
         });
@@ -117,21 +84,31 @@ const ModeratorPanel = () => {
 
         });
 
-        socket.off("new_answer").once("new_answer", (queAnsTeams, question) => {
-            setQueAntTeams(queAnsTeams);
-            setQuestion(question);
-            /*setSavedAnswers((pre) =>
-                 [...pre, {queAnsTeams.id, queAnsTeams.team_id, question.content, queAnsTeams.answer, false}])*/
 
-        })
+        socket.off("new_answer").on("new_answer", (queAnsTeams, question) => {
+            setSavedAnswers((savedAnswer) => [
+                ...savedAnswer,
+                {
+                    teamsQueAns_id:queAnsTeams.id,
+                    team_id: queAnsTeams.team_id,
+                    teamsQueAns: queAnsTeams,
+                    question: question,
+                    checked: false
+                }
+            ]);
+            localStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
+            console.log(localStorage.getItem("savedAnswers"))
+        });
 
-        if (!socket || !contextGameId) return;
+
+
+
+        if (!socket || !gameId) return;
         // Wanneer de socket connecteert of reconnecteert
         const handleConnect = () => {
-            socket.emit('joinGame', contextGameId);
+            socket.emit('joinGame', gameId);
         };
         socket.on('connect', handleConnect);
-
 
         return () => {
             socket.off("getModerator");
@@ -144,23 +121,17 @@ const ModeratorPanel = () => {
 
 
         };
-    }, [socket, contextGameId]);
+    }, [ gameId,setGameActive]);
 
-    const judgeAnswer = (queAntTeams_id: number, score: number, feedback: string) => {
-        if (queAntTeams) {
-            queAntTeams["score"] = score;
-            queAntTeams["feedback"] = feedback;
-            socket.emit("judge_answer", queAntTeams);
-        }
-    }
-    const handleStartGame = async () => {
+    useEffect(() => {
 
-        socket.emit('startGame', contextGameId)
-    }
+        const storedAnswers = localStorage.getItem("savedAnswers");
+        if(!storedAnswers) return alert("storedAnswers is null");
+        const parsedAnswers= JSON.parse(storedAnswers);
+        setSavedAnswers(parsedAnswers)
 
-    const handleNextRound = () => {
+    }, [])
 
-    }
 
     if (loading) return (<div className="moderator-game">
         <p className={'loading'}>
@@ -172,15 +143,15 @@ const ModeratorPanel = () => {
     return (
         <div className="moderator-game">
             <header>
-                {!gameActive &&
-                    <button className={'start_game_button'} onClick={handleStartGame}>Start the Game</button> ||
+                {!gameActive ?
+                    <button className={'start_game_button'} onClick={handleStartGame}>Start the Game</button> :
                     <button className={'start_game_button'} onClick={handleNextRound}>Next round</button>
                 }
                 <label>Room Code: </label>
                 <h3>{game?.id}</h3>
                 <label>Moderator: </label>
-                <strong>{moderator?.name}</strong>-
-                <h3>{moderator?.id}</h3>
+                <strong>{moderator?.name}</strong>
+
             </header>
             {msg &&
                 <div className="message">
@@ -188,94 +159,10 @@ const ModeratorPanel = () => {
                 </div>
             }
             {<div className="game-board">
-                {waiting ? <h1 className="waiting-text">Waiting for Teams....</h1> :
+                {!waiting &&
                     <VennBoard isPlayer={false} currentTeam={null}/>}
-                {queAntTeams && <div className="answers-section">
-                    <h3>Ingezonden antwoord van {teams?.find(t => t.id === queAntTeams.team_id)?.name}</h3>
-                    <div className={'answers'}>
-                        <div className="answer-container">
-                            <p className="question-block">
-                                <strong>{question?.content}</strong>
-                            </p>
-                            <p className="answer-block">
-                                {queAntTeams.answer}
-                            </p>
-                        </div>
-                        <form className={'judge-form'}
-                              onSubmit={() => judgeAnswer(queAntTeams.question_id, points, feedback)}>
-
-                            <textarea className={'feedback-text'} placeholder={'geef jouw feedback'}
-                                      onChange={(e) => setFeedback(e.target.value)}/>
-                            <div className={"points-container"}>
-                                <input
-                                    id={"0"}
-                                    className={'peer'}
-                                    name="points"
-                                    value={0}
-                                    type={'radio'}
-                                    hidden={true}
-                                    onChange={(e) => setPoints(parseInt(e.target.value))}
-                                /><label
-                                htmlFor="0"
-                                className={"points"}
-                            >0</label>
-                                <input
-                                    id={"5"}
-                                    className={'peer'}
-                                    name="points"
-                                    value={5}
-                                    type={'radio'}
-                                    hidden={true}
-                                    onChange={(e) => setPoints(parseInt(e.target.value))}
-                                /><label
-                                htmlFor="5"
-                                className={"points"}
-                            >5</label>
-                                <input
-                                    id={"10"}
-                                    className={'peer'}
-                                    name="points"
-                                    value={10}
-                                    type={'radio'}
-                                    hidden={true}
-                                    onChange={(e) => setPoints(parseInt(e.target.value))}
-                                /><label
-                                htmlFor="10"
-                                className={"points"}
-                            >10</label>
-                                <input
-                                    id={"15"}
-                                    className={'peer'}
-                                    name="points"
-                                    value={15}
-                                    type={'radio'}
-                                    hidden={true}
-                                    onChange={(e) => setPoints(parseInt(e.target.value))}
-                                /><label
-                                htmlFor="15"
-                                className={"points"}
-                            >15</label>
-                                <input
-                                    id={"20"}
-                                    className={'peer'}
-                                    name="points"
-                                    value={20}
-                                    type={'radio'}
-                                    hidden={true}
-                                    onChange={(e) => setPoints(parseInt(e.target.value))}
-                                /><label
-                                htmlFor="20"
-                                className={"points "}
-                            >20</label>
-                            </div>
-                            <button
-                                className={"sub-button"}
-                                type={'submit'}>
-                                submit
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                {show &&
+                    <Popup setShow={setShow}/>
                 }
             </div>}
 
@@ -286,13 +173,14 @@ const ModeratorPanel = () => {
                         teams.map((team, teamIndex) => (
                             <div key={teamIndex} className="team-column">
                                 <div className="team-title-container">
-
-                                    <img
+                                    <button className={` popup_button ${savedAnswers.map(a => a.team_id).includes(team.id) ? 'active': '' }`} disabled={!savedAnswers.map(a => a.team_id).includes(team.id)} onClick={() => openPopup(team.id)}>
+                                        <img
                                         src={
                                             strategies.find((s) => s.id === team.strategy_id)?.icon || "default.icon"
                                         }
                                         alt="strategy icon"
                                     />
+                                    </button>
                                     <h3>{team.name}</h3>
 
                                 </div>
@@ -301,7 +189,7 @@ const ModeratorPanel = () => {
                                         <div key={roundIndex} className="board-cell">
                                             <p>Round {roundIndex + 1}</p>
                                             <p>Punten:
-                                                <strong>{team.points}</strong>
+                                                <strong> {team.points}</strong>
                                             </p>
                                         </div>
                                     ))}

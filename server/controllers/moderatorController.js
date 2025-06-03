@@ -67,27 +67,21 @@ async function handleStartRound(io, game_id) {
 
 }
 
-async function handleJudgeAnswer(socket, queAnsTeams) {
+async function handleJudgeAnswer(io, socket, queAnsTeams) {
     const game = await gameService.getGameById(queAnsTeams.game_id);
     if (!game) return console.error("game not found");
     console.log(queAnsTeams)
 
-    await teamQueAnsService.updateTeamQueAns(queAnsTeams);
+    const teamsQueAns = await teamQueAnsService.updateTeamQueAns(queAnsTeams);
 
     const team = await teamService.getTeamById(queAnsTeams.team_id);
 
-    if (team) {
-        const newScore = team.points += queAnsTeams.score;
-        await teamService.updateTeam(team.id, {points:newScore});
-        // Send feedback naar team
-        socket.emit('answer_feedback', {
-            questionId: queAnsTeams.question_id,
-            newScore,
-            feedback:queAnsTeams.feedback
-        });
+    const newScore = team.points += queAnsTeams.score;
+    await teamService.updateTeam(team.id, {points:newScore});
+    // Send feedback naar team
+    socket.emit('answer_feedback');
 
-        console.log(`✅ Feedback gestuurd naar team ${queAnsTeams.teamId}`);
-    }
+    console.log(`✅ Feedback gestuurd naar team ${queAnsTeams.teamId}`);
 
 }
 

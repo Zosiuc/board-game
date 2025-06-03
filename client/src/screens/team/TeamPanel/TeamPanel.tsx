@@ -12,20 +12,19 @@ import {useTranslation} from "react-i18next";
 import {getGameModeratorListener, getModeratorListener} from "../../../socket/moderatorListeners";
 
 const TeamPanel: React.FC = () => {
+
     const {t} = useTranslation();
+    const {teamId} = useParams();
+
+    const {setModerator} = useGameContext();
+    const { msg,setMsg, setGameActive} = useGameContext();
+    const {gameId} = useGameContext();
+    const {team, setTeam} = useGameContext();
+    const {roundNumber} = useGameContext();
+    const {question, setQuestion} = useGameContext()
+
+    const [answer, setAnswer] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const {contextGameId,msg, gameActive,setMsg, setGameActive} = useGameContext();
-    const [team, setTeam] = useState<{
-        id: string,
-        name: string,
-        strategy_id: number,
-        game_id: string,
-        points: number,
-        color:string,
-        current_tileId: string,
-        socket_id: string,
-        created_at: string
-    }|null>(null)
     const [teamStrategy, setTeamStrategy] = useState<{
         id: number,
         category_id: number,
@@ -33,16 +32,7 @@ const TeamPanel: React.FC = () => {
         icon: string,
         color: string
     } | null>(null);
-    const {teamId} = useParams();
-    const [moderator, setModerator] = useState<{
-        id: string,
-        name: string,
-        game_id: string,
-        created_at: string
-    } | null>(null);
-    const [roundNumber, setRoundNumber] = useState<number>(0);
-    const [question, setQuestion] = useState<{id:number,category_id:number,strategy_id:number,lang:string,content:string}|null>(null);
-    const [answer, setAnswer] = useState<string | null>(null);
+
 
     const loadModerator = async () => {
         try{
@@ -86,13 +76,15 @@ const TeamPanel: React.FC = () => {
 
 
     const handleSubmitAnswer = () => {
-        socket.emit("submit_answer", contextGameId, teamId, question?.id  , answer, roundNumber)
+        socket.emit("submit_answer", gameId, teamId, question?.id  , answer, roundNumber)
     }
 
     useEffect(() => {
-        socket.emit("loadGame", sessionStorage.getItem("game_id"))
+
+        socket.emit("loadGame", sessionStorage.getItem("game_id"));
         socket.on("game", (game) => {
             if (game.status === "active" ) setGameActive(true)
+            else setGameActive(false);
             setLoading(false);
         });
 
@@ -100,9 +92,9 @@ const TeamPanel: React.FC = () => {
             loadStrategy().then(()=> loadModerator())
         });
 
-        socket.emit("reconnecting")
+        socket.emit("reconnecting");
 
-        socket.on("question", (myQuestion: React.SetStateAction<{ id: number; category_id: number; strategy_id: number; lang: string; content: string; } | null>) => {
+        socket.on("question", (myQuestion) => {
             setQuestion(myQuestion);
         });
         return () => {
@@ -113,11 +105,11 @@ const TeamPanel: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (!socket || !contextGameId) return;
+        if (!socket || !gameId) return;
 
         // Wanneer de socket connecteert of reconnecteert
         const handleConnect = () => {
-            socket.emit('joinGame', contextGameId);
+            socket.emit('joinGame', gameId);
         };
 
         socket.on('connect', handleConnect);
@@ -126,7 +118,7 @@ const TeamPanel: React.FC = () => {
         return () => {
             socket.off('connect', handleConnect);
         };
-    }, [socket, contextGameId]);
+    }, [socket, gameId]);
 
 
 

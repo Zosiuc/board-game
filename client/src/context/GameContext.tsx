@@ -4,20 +4,15 @@ import {socket} from "../socket/client";
 
 interface GameContextType {
 
-    contextGameId: string | null;
-    contextTeamId: string | null;
-    contextModeratorId: string | null;
-    gameActive:boolean;
-    msg:string
+    gameId: string;
+    moderatorId: string;
+    teamId: string;
+    roundNumber:number;
 
-    contextModerator: {
-        id: string,
-        name: string,
-        game_id: string,
-        created_at: string
-    } | null;
+    gameActive: boolean;
+    msg: string
 
-    contextGame: {
+    game: {
         id: string,
         category_id: number,
         rounds: number,
@@ -27,17 +22,13 @@ interface GameContextType {
         master_socket: string,
         created_at: string
     } | null;
-
-    contextGameTiles: {
+    moderator: {
         id: string,
+        name: string,
         game_id: string,
-        x: number,
-        y: number,
-        color: string,
-        clicked: boolean,
-    }[] | null;
-
-    contextTeams: {
+        created_at: string
+    } | null;
+    team: {
         id: string,
         name: string,
         strategy_id: number,
@@ -45,59 +36,126 @@ interface GameContextType {
         socket_id: string,
         points: number,
         color: string,
-        current_tiled: string
+        current_tileId: string
         created_at: string
-    }[] | null;
-
-    contextQueAntTeams: {
+    } | null;
+    gameTiles: {
+        id: string,
+        game_id: string,
+        x: number,
+        y: number,
+        color: string,
+        clicked: boolean,
+    }[];
+    teams: {
+        id: string,
+        name: string,
+        strategy_id: number,
+        game_id: string,
+        socket_id: string,
+        points: number,
+        color: string,
+        current_tileId: string
+        created_at: string
+    }[];
+    teamsQueAns: {
         id: number,
         game_id: string,
         team_id: string,
-        question_id: number, moderator_id: number,
+        question_id: number,
+        moderator_id: number,
         answer: string,
         score: number,
         feedback: string,
         round_number: number,
         created_at: string,
         updated_at: string
-    }[] | null;
+    }|null;
+    question: {
+        id: number,
+        category_id: number,
+        strategy_id: number,
+        lang: string,
+        content: string
+    }|null
 
-    contextStrategies: {
+    strategies: {
         id: number,
         category_id: number,
         name: string,
         icon: string,
         color: string
-    }[] | null;
+    }[];
 
-    setContextGameId: (contextGameId: string | null) => void;
-    setContextTeamId: (contextTeamId: string | null) => void;
-    setContextModeratorId: (contextModeratorId: string | null) => void;
+    savedAnswers: {
+        teamsQueAns_id: number,
+        team_id: string,
+        teamsQueAns: {
+            id: number,
+            game_id: string,
+            team_id: string,
+            question_id: number,
+            moderator_id: number,
+            answer: string,
+            score: number,
+            feedback: string,
+            round_number: number,
+            created_at: string,
+            updated_at: string
+        },
+        question: {
+            id: number,
+            category_id: number,
+            strategy_id: number,
+            lang:string,
+            content:string
+        },
+        checked: boolean
+    }[];
+
+    setGameId: (gameId: string) => void;
+    setModeratorId: (moderatorId: string) => void;
+    setTeamId: (teamId: string) => void;
+    setRoundNumber: (roundNumber: number) => void;
+
     setGameActive: (gameActive: boolean) => void;
     setMsg: (msg: string) => void;
 
-    setContextModerator: (
-        contextModerator: {
+    setModerator: (
+        moderator: {
             id: string,
             name: string,
             game_id: string,
             created_at: string
-        } | null
+        }
     ) => void;
 
-    setContextGame: (contextGame: {
-                         id: string,
-                         category_id: number,
-                         rounds: number,
-                         teams_count: number,
-                         status: string,
-                         lang: string,
-                         master_socket: string,
-                         created_at: string
-                     } | null
+    setGame: (game: {
+                  id: string,
+                  category_id: number,
+                  rounds: number,
+                  teams_count: number,
+                  status: string,
+                  lang: string,
+                  master_socket: string,
+                  created_at: string
+              }
     ) => void;
 
-    setContextGameTiles: (
+    setTeam: (team: {
+                  id: string,
+                  name: string,
+                  strategy_id: number,
+                  game_id: string,
+                  socket_id: string,
+                  points: number,
+                  color: string,
+                  current_tileId: string,
+                  created_at: string
+              } | null
+    ) => void;
+
+    setGameTiles: (
         contextGameTiles: {
             id: string,
             game_id: string,
@@ -105,54 +163,124 @@ interface GameContextType {
             y: number,
             color: string,
             clicked: boolean,
-        }[] | null
+        }[]
     ) => void;
 
 
-    setContextTeams: (contextTeams: (prev: any) => any[]
+    setTeams: (teams: {
+                   id: string,
+                   name: string,
+                   strategy_id: number,
+                   game_id: string,
+                   socket_id: string,
+                   points: number,
+                   color: string,
+                   current_tileId: string
+                   created_at: string
+               }[]
     ) => void;
 
-    setContextQueAntTeams: (contextQueAntTeams: {
-                                id: number,
-                                game_id: string,
-                                team_id: string,
-                                question_id: number, moderator_id: number,
-                                answer: string,
-                                score: number,
-                                feedback: string,
-                                round_number: number,
-                                created_at: string,
-                                updated_at: string
-                            }[] | null
+    setTeamsQueAns: (teamsQueAns: {
+                         id: number,
+                         game_id: string,
+                         team_id: string,
+                         question_id: number,
+                         moderator_id: number,
+                         answer: string,
+                         score: number,
+                         feedback: string,
+                         round_number: number,
+                         created_at: string,
+                         updated_at: string
+                     }|null
     ) => void;
 
-    setContextStrategies: (contextStrategies: {
-                               id: number,
-                               category_id: number,
-                               name: string,
-                               icon: string,
-                               color: string
-
-                           }[] | null
+    setQuestion: (question: {
+                      id: number,
+                      category_id: number,
+                      strategy_id: number,
+                      lang: string,
+                      content: string
+                  }|null
     ) => void;
+    setStrategies: (strategies: {
+                        id: number,
+                        category_id: number,
+                        name: string,
+                        icon: string,
+                        color: string
+
+                    }[]
+    ) => void;
+    setSavedAnswers: (savedAnswers:(savedAnswers: {
+                          teamsQueAns_id: number,
+                          team_id: string,
+                          teamsQueAns: {
+                              id: number,
+                              game_id: string,
+                              team_id: string,
+                              question_id: number,
+                              moderator_id: number,
+                              answer: string,
+                              score: number,
+                              feedback: string,
+                              round_number: number,
+                              created_at: string,
+                              updated_at: string
+                          },
+                          question: {
+                              id: number,
+                              category_id: number,
+                              strategy_id: number,
+                              lang:string,
+                              content:string
+                          },
+                          checked: boolean
+                      }[] ) => {
+                          teamsQueAns_id: number,
+                          team_id: string,
+                          teamsQueAns: {
+                              id: number,
+                              game_id: string,
+                              team_id: string,
+                              question_id: number,
+                              moderator_id: number,
+                              answer: string,
+                              score: number,
+                              feedback: string,
+                              round_number: number,
+                              created_at: string,
+                              updated_at: string
+                          },
+                          question: {id: number,
+                              category_id: number,
+                              strategy_id: number,
+                              lang:string,
+                              content:string},
+                          checked: boolean
+    }[]
+    ) => void ;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({children}: { children: ReactNode }) => {
-    const [contextGameId, setContextGameId] = useState<string | null>(null);
-    const [contextTeamId, setContextTeamId] = useState<string | null>(null);
-    const [contextModeratorId, setContextModeratorId] = useState<string | null>(null);
+    const [gameId, setGameId] = useState<string>("");
+    const [teamId, setTeamId] = useState<string>("");
+    const [moderatorId, setModeratorId] = useState<string>("");
+    const [roundNumber, setRoundNumber] = useState<number>(0);
+
     const [gameActive, setGameActive] = useState<boolean>(false);
-    const [ msg, setMsg] = useState("");
-    const [contextModerator, setContextModerator] = useState<{
+    const [msg, setMsg] = useState("");
+
+    const [moderator, setModerator] = useState<{
         id: string,
         name: string,
         game_id: string,
         created_at: string
     } | null>(null);
 
-    const [contextGame, setContextGame] = useState<{
+    const [game, setGame] = useState<{
         id: string,
         category_id: number,
         rounds: number,
@@ -161,18 +289,8 @@ export const GameProvider = ({children}: { children: ReactNode }) => {
         lang: string,
         master_socket: string,
         created_at: string
-    } | null
-    >(null);
-
-    const [contextGameTiles, setContextGameTiles] = useState<{
-        id: string,
-        game_id: string,
-        x: number,
-        y: number,
-        color: string,
-        clicked: boolean
-    }[] | null>(null);
-    const [contextTeams, setContextTeams] = useState<{
+    } | null>(null);
+    const [team, setTeam] = useState<{
         id: string,
         name: string,
         strategy_id: number,
@@ -180,52 +298,106 @@ export const GameProvider = ({children}: { children: ReactNode }) => {
         socket_id: string,
         points: number,
         color: string,
-        current_tiled: string
+        current_tileId: string
         created_at: string
-    }[] | null>(null);
-    const [contextQueAntTeams, setContextQueAntTeams] = useState<{
+    } | null>(null);
+
+    const [gameTiles, setGameTiles] = useState<{
+        id: string,
+        game_id: string,
+        x: number,
+        y: number,
+        color: string,
+        clicked: boolean
+    }[]>([]);
+    const [teams, setTeams] = useState<{
+        id: string,
+        name: string,
+        strategy_id: number,
+        game_id: string,
+        socket_id: string,
+        points: number,
+        color: string,
+        current_tileId: string
+        created_at: string
+    }[]>([]);
+    const [teamsQueAns, setTeamsQueAns] = useState<{
         id: number,
         game_id: string,
         team_id: string,
-        question_id: number, moderator_id: number,
+        question_id: number,
+        moderator_id: number,
         answer: string,
         score: number,
         feedback: string,
         round_number: number,
         created_at: string,
         updated_at: string
-    }[] | null>(null);
-    const [contextStrategies, setContextStrategies] = useState<{
+    }|null>(null);
+    const [question, setQuestion] = useState<{
+        id: number,
+        category_id: number,
+        strategy_id: number,
+        lang:string,
+        content:string
+    }|null>(null);
+    const [strategies, setStrategies] = useState<{
         id: number,
         category_id: number,
         name: string,
         icon: string,
         color: string
-    }[] | null>(null);
+    }[]>([]);
+    const [savedAnswers, setSavedAnswers] = useState<{
+        teamsQueAns_id: number,
+        team_id: string,
+        teamsQueAns: {
+            id: number,
+            game_id: string,
+            team_id: string,
+            question_id: number,
+            moderator_id: number,
+            answer: string,
+            score: number,
+            feedback: string,
+            round_number: number,
+            created_at: string,
+            updated_at: string
+        },
+        question: {
+            id: number,
+            category_id: number,
+            strategy_id: number,
+            lang:string,
+            content:string
+        },
+        checked: boolean
+    }[]>([]);
 
     useEffect(() => {
         //breng game
         const game_id = sessionStorage.getItem("game_id");
         if (!game_id) return console.error('gameId not found');
-        setContextGameId(game_id);
+        setGameId(game_id);
 
         socket.emit("loadGame", game_id)
-        socket.on("game", (game) => {
-            setContextGame(game)
+        socket.off("game").on("game", (game) => {
+            setGame(game)
+            if (game.status === "active") setGameActive(true);
+            else setGameActive(false);
         });
 
         socket.emit("loadTiles", game_id)
-        socket.on("gameTiles", (gameTiles) => {
-            setContextGameTiles(gameTiles);
+        socket.off("gameTiles").on("gameTiles", (gameTiles) => {
+            setGameTiles(gameTiles);
         });
 
         socket.emit("getSameRoomTeams", game_id);
-        socket.on("sameRoomTeams", (teams) => {
-            setContextTeams(teams);
+        socket.off("sameRoomTeams").on("sameRoomTeams", (teams) => {
+            setTeams(teams);
         });
 
-        socket.on('gameStarted' ,(msg) => {
-
+        socket.on('gameStarted', (msg) => {
             setGameActive(true);
             setMsg(msg)
         })
@@ -252,28 +424,36 @@ export const GameProvider = ({children}: { children: ReactNode }) => {
 
     return (
         <GameContext.Provider value={{
-            contextGameId,
-            contextTeamId,
-            contextModeratorId,
+            gameId,
+            teamId,
+            moderatorId,
+            roundNumber,
             gameActive,
             msg,
-            contextModerator,
-            contextGame,
-            contextGameTiles,
-            contextTeams,
-            contextQueAntTeams,
-            contextStrategies,
-            setContextGameId,
-            setContextTeamId,
-            setContextModeratorId,
+            moderator,
+            game,
+            team,
+            gameTiles,
+            teams,
+            teamsQueAns,
+            question,
+            strategies,
+            savedAnswers,
+            setGameId,
+            setTeamId,
+            setModeratorId,
+            setRoundNumber,
             setGameActive,
             setMsg,
-            setContextModerator,
-            setContextGame,
-            setContextGameTiles,
-            setContextTeams,
-            setContextQueAntTeams,
-            setContextStrategies
+            setModerator,
+            setGame,
+            setTeam,
+            setGameTiles,
+            setTeams,
+            setTeamsQueAns,
+            setQuestion,
+            setStrategies,
+            setSavedAnswers
         }}>
             {children}
         </GameContext.Provider>

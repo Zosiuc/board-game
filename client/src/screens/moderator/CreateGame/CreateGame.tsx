@@ -30,8 +30,9 @@ const generateRoomCode = (length: number = 3): string => {
 const CreateGame: React.FC = () => {
     const {t} = useTranslation();
     const navigate = useNavigate();
-    const { setContextGameId, setContextModeratorId} = useGameContext();
-    const [gameId, setGameId] = useState<string|null>(null);
+    const { gameId, setGameId} = useGameContext();
+    const {  setModeratorId} = useGameContext();
+
     const [moderatorName, setModeratorName] = useState<string>("");
     const [rounds, setRounds] = useState<number>(2);
     const [totalTeams, setTotalTeams] = useState<number>(2);
@@ -67,7 +68,7 @@ const CreateGame: React.FC = () => {
                 console.error(new Error("Game Could Not Add."));
                 return;
             }
-            setContextGameId(responseGameId);
+            setGameId(responseGameId);
             sessionStorage.setItem("game_id",responseGameId);
             console.log(`Game ${responseGameId} is gemaakt!`);
 
@@ -79,9 +80,9 @@ const CreateGame: React.FC = () => {
             }
             console.log(`Moderator ${moderatorIdR} is toegevoegd`);
             sessionStorage.setItem("moderator_id", String(moderatorIdR));
-            setContextModeratorId(moderatorIdR);
+            setModeratorId(moderatorIdR);
 
-
+            setLoading(false);
             navigate(`/moderator/${responseGameId}`);
 
         } catch (err) {

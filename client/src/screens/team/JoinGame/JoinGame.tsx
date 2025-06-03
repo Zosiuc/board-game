@@ -9,24 +9,22 @@ import {getStrategiesListener} from "../../../socket/strategyListeners";
 
 import { useTranslation } from "react-i18next";
 import {useGameContext} from "../../../context/GameContext";
+import {socket} from "../../../socket/client";
 const Logo =  "/Logo.png";
 
 
 const JoinGame = () => {
     const { t } = useTranslation();
-    const {setContextGameId,setContextTeamId} = useGameContext();
-    const [strategies, setStrategies] = useState <{id: number,
-        category_id: number,
-        name: string,
-        icon: string,
-        color: string
-}[] | null>()
-    const {contextTeams} = useGameContext();
+    //const {gameId,setGameId} = useGameContext();
+    //const {teamId,setTeamId} = useGameContext();
+    const {strategies,setStrategies} = useGameContext();
+
+
     const [gameId, setGameId] = useState("");
     const [teamId, setTeamId] = useState<string>("");
     const [teamName, setTeamName] = useState<string>("");
     const [strategy, setStrategy] = useState<string>("lunar");
-    const [loading, setLoading] = useState(true);
+
     const [gameAvailable, setGameAvailable] = useState<boolean>(false);
     const [availableStrategies, setAvailableStrategies] = useState<{
         id: number,
@@ -34,9 +32,12 @@ const JoinGame = () => {
         name: string,
         icon: string,
         color: string
-    }[] | null>()
+    }[] | null>();
+
     const [inputValue, setInputValue] = useState('');
     const [debouncedValue, setDebouncedValue] = useState('');
+
+    const [loading, setLoading] = useState(true);
     const [fout, setFout] = useState<string>('');
     const navigate = useNavigate();
 
@@ -57,7 +58,6 @@ const JoinGame = () => {
     };
     const handelGetStrategies = async () => {
         try {
-            setLoading(true);
             const response:
                 {id:number,category_id:number,name:string,icon:string,color:string}[]|null
                 = await getStrategiesListener();
@@ -69,7 +69,7 @@ const JoinGame = () => {
             const filteredStrategies = response.filter(s => s.name !== "Chance" && s.name !== "Megatrends" && s.name !== "Sales management");
             setStrategies(filteredStrategies);
             setAvailableStrategies(filteredStrategies);
-            setLoading(false);
+
 
         } catch (err) {
             console.error(`Fout bij het ophalen van categorieën: ${err}`);
@@ -85,9 +85,9 @@ const JoinGame = () => {
             sessionStorage.setItem("game_id", gameId)
             const team = await addTeamListener(teamId, teamName, strategy, gameId );
             sessionStorage.setItem("team_id", JSON.stringify(team.id));
-            setContextTeamId(teamId);
-            setContextGameId(gameId);
-
+            setTeamId(teamId);
+            setGameId(gameId);
+            setLoading(false)
 
             navigate(`/game/${team?.id}`)
         }catch (error) {
@@ -99,16 +99,16 @@ const JoinGame = () => {
     };
 
     const checkStrategyInUse = async (game_id:string) => {
-        setLoading(true);
+
         const allTeams = await getRoomTeamsListener(game_id);
         if (allTeams.length <= 0) {
-            handelGetStrategies()
+            await handelGetStrategies()
             return setLoading(false);
         }
         const strategiesIdInUse = allTeams?.map((team) => team.strategy_id);
         const availableStrategies = strategies?.filter(strategy => !strategiesIdInUse.includes(strategy.id));
         setAvailableStrategies(availableStrategies)
-        setLoading(false)
+
 
     }
 
@@ -152,6 +152,10 @@ const JoinGame = () => {
         handelGetStrategies().then(()=> {
             setLoading(false)
         });
+
+        return () => {
+            socket.off("")
+        }
 
     }, [])
 

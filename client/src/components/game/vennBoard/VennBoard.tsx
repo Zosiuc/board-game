@@ -29,16 +29,12 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
         6: { x: 0,   y: 180 }     // back
     });
     const diceRef = useRef<HTMLDivElement>(null);
-    const {contextGameId, gameActive} = useGameContext();
     const {teamId} = useParams();
+
+    const {gameId, gameActive} = useGameContext();
+
     const [onClickedTiles,setOnClickedTiles] = useState<string[]>([]);
-    const [tiles , setTiles] = useState<{
-        id:string,
-        game_id:string,
-        x:number,
-        y:number,
-        color:string,
-        clicked:boolean}[]|null>(null);
+    const {gameTiles , setGameTiles} = useGameContext()
 
     const [possibleTilesId , setPossibleTilesId] = useState<string[]|null>(null);
 
@@ -58,28 +54,29 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
 
     const movePlayer = (steps:number) => {
         if (!onClickedTiles) return ;
-        const currentTileId = sessionStorage.getItem("current_tile_id") ?? "T0";
-        const newTilesId = [`T${parseInt(currentTileId.slice(1)) + steps}`, `T${parseInt(currentTileId?.slice(1)) - steps}`]
+        const currentTileId = localStorage.getItem("current_tile_id") ?? "T0";
+        const newTilesId = [`T${parseInt(currentTileId.slice(1)) + steps}`,`T${parseInt(currentTileId.slice(1)) - steps}`,`T${parseInt(currentTileId.slice(1)) % steps}`,`T${parseInt(currentTileId.slice(1)) * steps /3}`]
         const pTilesId = newTilesId.filter(t=> onClickedTiles.includes(t));
-        if (pTilesId.length === 0) {
+        console.log(newTilesId);
+        if ( pTilesId.length === 0 ) {
             return setPossibleTilesId(onClickedTiles)
         }
-        return setPossibleTilesId(pTilesId)
+
+        return setPossibleTilesId(newTilesId);
     };
 
     const handleClick = (id:string) => {
-        const tile = tiles?.find(t => t.id === id);
+        const tile = gameTiles?.find(t => t.id === id);
         if(!tile) return alert("No tile found.");
-        sessionStorage.setItem("current_tile_id", tile?.id);
-        socket.emit("team_tile_click", contextGameId, teamId, tile);
+        localStorage.setItem("current_tile_id", tile?.id);
+        socket.emit("team_tile_click", gameId, teamId, tile);
 
     };
 
     useEffect(() => {
-
-        socket.emit("loadTiles", contextGameId)
+        socket.emit("loadTiles", gameId)
         socket.off("gameTiles").once("gameTiles", (gameTiles) => {
-            setTiles(gameTiles);
+            setGameTiles(gameTiles);
             if(gameTiles) {
                 const ot = gameTiles.filter((t: {
                     id: string,
@@ -105,7 +102,7 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
             socket.off("gameTiles");
         }
 
-    }, [contextGameId]);
+    }, [gameId]);
 
 
     return (
@@ -117,7 +114,7 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
                 Please wait for the moderator to start the game.</strong>
             </div>
             }
-            {gameActive && tiles?.map((tile,index) => (
+            {gameActive && gameTiles?.map((tile,index) => (
                 <button
                     key={index}
                     className={` ${isPlayer && !tile.clicked && possibleTilesId?.includes(tile.id)? `active-tile` : 'disable-tile'} ${currentTeam?.current_tileId === tile.id ? 'team-here' : ''} `}
