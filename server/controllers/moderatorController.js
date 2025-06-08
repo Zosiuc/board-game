@@ -68,11 +68,6 @@ async function handleStartRound(io, game_id) {
 }
 
 async function handleJudgeAnswer(io, socket, queAnsTeams) {
-    const game = await gameService.getGameById(queAnsTeams.game_id);
-    if (!game) return console.error("game not found");
-    console.log(queAnsTeams)
-
-    const teamsQueAns = await teamQueAnsService.updateTeamQueAns(queAnsTeams);
 
     const team = await teamService.getTeamById(queAnsTeams.team_id);
 
