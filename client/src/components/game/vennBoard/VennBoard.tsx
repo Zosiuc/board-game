@@ -39,23 +39,22 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
     const [possibleTilesId , setPossibleTilesId] = useState<string[]|null>(null);
 
     const rollDice = () => {
-
         const steps = Math.floor(Math.random() * 6) + 1;
         movePlayer(steps);
-
-
         // @ts-ignore
         let rotation  = faceRotations[steps];
         if (diceRef.current) {
             diceRef.current.style.transform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
         }
-
     };
 
     const movePlayer = (steps:number) => {
         if (!onClickedTiles) return ;
         const currentTileId = localStorage.getItem("current_tile_id") ?? "T0";
-        const newTilesId = [`T${parseInt(currentTileId.slice(1)) + steps}`,`T${parseInt(currentTileId.slice(1)) - steps}`,`T${parseInt(currentTileId.slice(1)) % steps}`,`T${parseInt(currentTileId.slice(1)) * steps /3}`]
+        const newTilesId = [`T${parseInt(currentTileId.slice(1)) + steps}`,
+            `T${parseInt(currentTileId.slice(1)) - steps}`,
+            `T${parseInt(currentTileId.slice(1)) % steps}`,
+            `T${parseInt(currentTileId.slice(1)) * steps /3}`]
         const pTilesId = newTilesId.filter(t=> onClickedTiles.includes(t));
         console.log(newTilesId);
         if ( pTilesId.length === 0 ) {

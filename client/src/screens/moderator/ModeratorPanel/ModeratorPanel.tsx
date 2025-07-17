@@ -58,6 +58,7 @@ const ModeratorPanel = () => {
         socket.emit("getModerator", moderator_id);
         socket.on("moderator", (moderator) => {
             setModerator(moderator);
+            setLoading(false);
         });
 
         socket.emit("loadGame", game_id)
@@ -72,15 +73,21 @@ const ModeratorPanel = () => {
 
         socket.emit("getStrategies")
         socket.on("strategies", (data) => {
-            if (data.error) return alert(data.error);
+            if (data.error)  {
+                alert(data.error);
+                return setLoading(false);
+        }
+            setLoading(false);
             setStrategies(data.strategies);
+            setLoading(false);
         });
 
 
         socket.emit("getSameRoomTeams", game_id);
         socket.on("sameRoomTeams", (teams) => {
-            if (!teams) return
+            if (!teams) return setLoading(false);
             setTeams(teams);
+            setLoading(false);
 
         });
 

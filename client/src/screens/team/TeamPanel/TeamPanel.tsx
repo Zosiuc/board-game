@@ -80,7 +80,9 @@ const TeamPanel: React.FC = () => {
     }
 
     useEffect(() => {
-
+        socket.on("gameStarted", (msg) => {
+            setMsg(msg);
+        })
         socket.emit("loadGame", sessionStorage.getItem("game_id"));
         socket.on("game", (game) => {
             if (game.status === "active" ) setGameActive(true)
@@ -113,6 +115,7 @@ const TeamPanel: React.FC = () => {
         };
 
         socket.on('connect', handleConnect);
+
 
         // Belangrijk: bij unmount opruimen
         return () => {

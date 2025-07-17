@@ -60,7 +60,6 @@ const CreateGame: React.FC = () => {
     const handelCreateGame = async (event: { preventDefault: () => void; }) => {
         try {
             event.preventDefault();
-            setLoading(true);
             if (!gameId) return alert("No game id found")
             const lang = document.documentElement.lang;
             const responseGameId = await addGameListener(gameId,category,rounds,totalTeams,lang);
@@ -82,7 +81,6 @@ const CreateGame: React.FC = () => {
             sessionStorage.setItem("moderator_id", String(moderatorIdR));
             setModeratorId(moderatorIdR);
 
-            setLoading(false);
             navigate(`/moderator/${responseGameId}`);
 
         } catch (err) {

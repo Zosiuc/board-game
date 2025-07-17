@@ -56,6 +56,9 @@ const JoinGame = () => {
 
         return setTeamId(result);
     };
+
+
+
     const handelGetStrategies = async () => {
         try {
             const response:
