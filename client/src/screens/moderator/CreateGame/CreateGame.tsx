@@ -44,6 +44,7 @@ const CreateGame: React.FC = () => {
         try {
             const response = await getCategoriesListener();
             if (!response || response.length === 0) {
+                setLoading(false);
                 alert("Geen categorieën gevonden");
                 return;
             }
