@@ -5,6 +5,7 @@ import {useGameContext} from "../../../context/GameContext";
 import {useParams} from "react-router-dom";
 
 
+
 type GameProps = {
     isPlayer:boolean,
     currentTeam:{
@@ -20,6 +21,7 @@ type GameProps = {
 }
 
 const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
+    const [ loading, setLoading ] = useState<boolean>(false);
     const [faceRotations] = useState({
         1: { x: 0,   y: 0   },    // front
         2: { x: -90, y: 0   },    // top
@@ -31,7 +33,7 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
     const diceRef = useRef<HTMLDivElement>(null);
     const {teamId} = useParams();
 
-    const {gameId, gameActive} = useGameContext();
+    const {gameId, gameActive,setGameActive} = useGameContext();
 
     const [onClickedTiles,setOnClickedTiles] = useState<string[]>([]);
     const {gameTiles , setGameTiles} = useGameContext()
@@ -65,14 +67,25 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
     };
 
     const handleClick = (id:string) => {
+
+        const element= document.getElementById(id);
+        const span = document.createElement("span");
+        span.classList.add("wait");
+        span.ariaHidden = "true";
+        element?.appendChild(span)
+
         const tile = gameTiles?.find(t => t.id === id);
         if(!tile) return alert("No tile found.");
         localStorage.setItem("current_tile_id", tile?.id);
         socket.emit("team_tile_click", gameId, teamId, tile);
 
+
     };
 
     useEffect(() => {
+        socket.on("gameStarted", (msg) => {
+            setGameActive(true);
+        })
         socket.emit("loadTiles", gameId)
         socket.off("gameTiles").once("gameTiles", (gameTiles) => {
             setGameTiles(gameTiles);
@@ -116,14 +129,15 @@ const VennBoard: React.FC<GameProps> = ({isPlayer,currentTeam}) => {
             {gameActive && gameTiles?.map((tile,index) => (
                 <button
                     key={index}
-                    className={` ${isPlayer && !tile.clicked && possibleTilesId?.includes(tile.id)? `active-tile` : 'disable-tile'} ${currentTeam?.current_tileId === tile.id ? 'team-here' : ''} `}
+                    id={tile.id}
+                    className={` ${isPlayer && !tile.clicked && possibleTilesId?.includes(tile.id) ? `active-tile` : 'disable-tile'} ${currentTeam?.current_tileId === tile.id ? 'team-here' : ''} loading_tile `}
                     onClick={() => handleClick(tile.id)}
                     style={{
                         position: "absolute",
                         width: 70,
                         height: 70,
                         borderRadius: 20,
-                        left:tile.x , // Tegel gecentreerd
+                        left: tile.x, // Tegel gecentreerd
                         top: tile.y, // Tegel gecentreerd
                         backgroundColor: tile.color
                     }}

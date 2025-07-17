@@ -133,7 +133,7 @@ const ModeratorPanel = () => {
     useEffect(() => {
 
         const storedAnswers = localStorage.getItem("savedAnswers");
-        if(!storedAnswers) return alert("storedAnswers is null");
+        if(!storedAnswers) return;
         const parsedAnswers= JSON.parse(storedAnswers);
         setSavedAnswers(parsedAnswers)
 

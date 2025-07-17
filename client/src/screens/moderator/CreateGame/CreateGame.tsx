@@ -38,7 +38,7 @@ const CreateGame: React.FC = () => {
     const [totalTeams, setTotalTeams] = useState<number>(2);
     const [categories, setCategories] = useState<{id:number,name:string}[] | null>(null);
     const [category, setCategory] = useState<string>("general");
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean|undefined>(true);
 
     const handelGetCategories = async ():Promise<void> => {
         try {
@@ -61,6 +61,7 @@ const CreateGame: React.FC = () => {
     const handelCreateGame = async (event: { preventDefault: () => void; }) => {
         try {
             event.preventDefault();
+            setLoading(true);
             if (!gameId) return alert("No game id found")
             const lang = document.documentElement.lang;
             const responseGameId = await addGameListener(gameId,category,rounds,totalTeams,lang);
@@ -97,11 +98,11 @@ const CreateGame: React.FC = () => {
     }, []);
 
 
-    if (loading) return (<div className="creatGame-page">
+   /* if (loading) return (<div className="creatGame-page">
         <p className={'loading'}>
         {t('Loading')} <span className="wait" aria-hidden="true"></span>
         </p>
-    </div>);
+    </div>);*/
 
 
     return (
@@ -166,7 +167,7 @@ const CreateGame: React.FC = () => {
                             )}
                         </select>
                     </div>
-                    <Button text={t("createGame")} type="submit" />
+                    <Button loading={loading} text={t("createGame")} type="submit"  />
                 </form>
 
             </div>
